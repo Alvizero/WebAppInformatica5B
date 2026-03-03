@@ -1,0 +1,18 @@
+/* =============================================
+   PROFILO
+   ============================================= */
+.profilo-card {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.profilo-card h2 {
+  margin-bottom: .5rem;
+  color: #0077b6;
+}
+
+.profilo-card > p {
+  margin-bottom: 1.2rem;
+  font-size: .9rem;
+  color: #555;
+}

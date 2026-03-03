@@ -1,0 +1,19 @@
+/* =============================================
+   REGISTER
+   ============================================= */
+.register-card {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.register-card h2 {
+  margin-bottom: 1.2rem;
+  color: #0077b6;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: .9rem;
+  color: #666;
+}

@@ -1,0 +1,83 @@
+/* =============================================
+   DASHBOARD
+   ============================================= */
+.dashboard-title {
+  margin-bottom: 1.5rem;
+  color: #0077b6;
+  font-size: 1.4rem;
+}
+
+/* Form card */
+.dashboard-form-card {
+  margin-bottom: 2rem;
+}
+
+.dashboard-form-card h3 {
+  color: #333;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+/* Mappa nel form */
+#map-pick {
+  height: 280px;
+  border-radius: 8px;
+  border: 1.5px solid #cdd5e0;
+  margin-top: .4rem;
+}
+
+.coord-display {
+  font-size: .85rem;
+  color: #0077b6;
+}
+
+/* Griglia viaggi */
+.trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.trip-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  border-left: 4px solid #0077b6;
+  transition: box-shadow .2s;
+}
+
+.trip-card:hover {
+  box-shadow: 0 4px 16px rgba(0,119,182,.15);
+}
+
+.trip-dest {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: .4rem;
+  color: #222;
+}
+
+.trip-date {
+  font-size: .85rem;
+  color: #666;
+  margin-bottom: .9rem;
+}
+
+.trip-actions {
+  display: flex;
+  gap: .5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+}
+
+@media (max-width: 480px) {
+  .trips-grid {
+    grid-template-columns: 1fr;
+  }
+}

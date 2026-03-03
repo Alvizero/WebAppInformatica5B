@@ -1,0 +1,43 @@
+/* =============================================
+   LOGIN
+   ============================================= */
+.login-card {
+  max-width: 420px;
+  margin: 2rem auto;
+}
+
+.login-card h2 {
+  margin-bottom: 1.2rem;
+  color: #0077b6;
+}
+
+.login-card label {
+  display: block;
+  font-size: .85rem;
+  font-weight: 600;
+  margin-bottom: .35rem;
+  color: #444;
+}
+
+.login-card input[type="email"],
+.login-card input[type="password"] {
+  width: 100%;
+  padding: .65rem .85rem;
+  border: 1.5px solid #cdd5e0;
+  border-radius: 8px;
+  font-size: .95rem;
+  margin-bottom: 1rem;
+  transition: border-color .2s;
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #0077b6;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: .9rem;
+  color: #666;
+}

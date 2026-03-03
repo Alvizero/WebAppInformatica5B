@@ -1,0 +1,59 @@
+/* =============================================
+   INDEX — HERO
+   ============================================= */
+.hero {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.hero h2 {
+  font-size: 2rem;
+  color: #0077b6;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 520px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-hero {
+  padding: .85rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+
+.btn-hero-primary {
+  background: linear-gradient(135deg, #0077b6, #00b4d8);
+  color: #fff;
+}
+
+.btn-hero-secondary {
+  background: #fff;
+  color: #0077b6;
+  border: 2px solid #0077b6;
+}
+
+.btn-hero:hover {
+  opacity: .85;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .hero h2 {
+    font-size: 1.5rem;
+  }
+}
