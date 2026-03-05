@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if ($success): ?>
       <div class="alert alert-success">
-        ✅ Account creato! <a href="/src/pages/login/login.php">Accedi ora →</a>
+        ✅ Account creato! <a href="./../login/login.php">Accedi ora →</a>
       </div>
     <?php else: ?>
 
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </form>
 
       <p class="register-footer">
-        Hai già un account? <a href="/src/pages/login/login.php">Accedi</a>
+        Hai già un account? <a href="./../login/login.php">Accedi</a>
       </p>
     <?php endif; ?>
   </div>

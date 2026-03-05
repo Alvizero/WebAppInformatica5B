@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../shared/auth.php';
+requireLogin();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -42,9 +43,9 @@ require_once __DIR__ . '/../../shared/auth.php';
     <div id="citta-display" style="font-size:.8rem;color:#0077b6;margin-bottom:.8rem;display:none;"></div>
 
     <label for="f-raggio">
-      Raggio di ricerca: <strong><span id="raggio-val">50</span> km</strong>
+      Raggio di ricerca: <strong><span id="raggio-val">10</span> km</strong>
     </label>
-    <input type="range" id="f-raggio" min="5" max="500" step="5" value="50"
+    <input type="range" id="f-raggio" min="5" max="200" step="1" value="10"
            style="padding:0;border:none;box-shadow:none;margin-bottom:1.2rem;"
            oninput="document.getElementById('raggio-val').textContent = this.value">
 

@@ -2,8 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
-
 requireLogin();
+
 $user = currentUser();
 $pdo  = getPDO();
 

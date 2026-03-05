@@ -11,6 +11,11 @@ startSession();
     <a href="./../map_view/map_view.php">🔍 Cerca compagni</a>
     <a href="./../dashboard/dashboard.php">🗺 I miei viaggi</a>
 
+    <?php if (isLoggedIn() && isAdmin()): ?>
+      <a href="./../admin/admin.php" class="btn-nav-admin">⚙️ Admin</a>
+    <?php endif; ?>
+
+
     <?php if (isLoggedIn()):
       $u = currentUser(); ?>
       <div class="nav-profile">
@@ -34,15 +39,19 @@ startSession();
           </div>
 
           <button type="button" class="nav-profile-item"
-                  onclick="window.location.href='./../profilo/profilo.php'">
+            onclick="window.location.href='./../profilo/profilo.php'">
             👤 Profilo
           </button>
           <button type="button" class="nav-profile-item"
-                  onclick="window.location.href='./../impostazioni/impostazioni.php'">
+            onclick="window.location.href='./../impostazioni/impostazioni.php'">
             ⚙️ Impostazioni
           </button>
+          <button type="button" class="nav-profile-item"
+            onclick="window.location.href='./../supporto/supporto.php'">
+            💬 Supporto
+          </button>
           <button type="button" class="nav-profile-item nav-profile-danger"
-                  onclick="window.location.href='./../logout/logout.php'">
+            onclick="window.location.href='./../logout/logout.php'">
             ⏏ Esci
           </button>
         </div>

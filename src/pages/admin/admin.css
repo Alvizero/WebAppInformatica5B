@@ -1,0 +1,162 @@
+/* ===== ADMIN PAGE ===== */
+.admin-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    padding: 1.2rem 0;
+    position: sticky;
+    top: 80px;
+}
+
+.admin-sidebar h3 {
+    font-size: .78rem;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    padding: .3rem 1.2rem .6rem;
+}
+
+.admin-nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: .6rem 1.2rem;
+    font-size: .9rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #333;
+    transition: background .15s;
+}
+.admin-nav-item:hover  { background: #f3f7fc; }
+.admin-nav-item.active { background: #e8f4fd; color: #0077b6; font-weight: 600; border-left: 3px solid #0077b6; }
+
+/* Contenuto principale */
+.admin-content { min-width: 0; }
+
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+
+.admin-section h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: #222;
+}
+
+/* Tabella utenti / viaggi */
+.admin-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.07);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: .88rem;
+}
+.admin-table th {
+    background: #f3f7fc;
+    padding: .7rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: #555;
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.admin-table td {
+    padding: .7rem 1rem;
+    border-top: 1px solid #ecf0f6;
+    color: #333;
+    vertical-align: middle;
+}
+.admin-table tr:hover td { background: #fafcff; }
+
+/* Badge stato */
+.badge {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+.badge-user    { background: #e8f4fd; color: #0077b6; }
+.badge-admin   { background: #fff3cd; color: #856404; }
+.badge-aperto  { background: #fde8e8; color: #c0392b; }
+.badge-risposto{ background: #d4edda; color: #155724; }
+.badge-chiuso  { background: #e9ecef; color: #555; }
+
+/* Actions in riga */
+.row-actions { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+/* Stat cards in cima */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.stat-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    text-align: center;
+}
+.stat-card .stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0077b6;
+}
+.stat-card .stat-label {
+    font-size: .8rem;
+    color: #888;
+    margin-top: .2rem;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .admin-grid { grid-template-columns: 1fr; }
+    .admin-sidebar { position: static; }
+}
+
+/* Badge livelli */
+.badge-level-0   { background: #fff3cd; color: #856404; }   /* Super Admin */
+.badge-level-1   { background: #d4edda; color: #155724; }   /* Admin */
+.badge-level-2   { background: #e8f4fd; color: #0077b6; }   /* Moderatore */
+.badge-level-255 { background: #f0f4f8; color: #888; }      /* Utente */
+
+/* Livello proprio in cima */
+.admin-own-level {
+    background: #fff;
+    border-radius: 10px;
+    padding: .7rem 1.2rem;
+    margin-bottom: 1.2rem;
+    font-size: .9rem;
+    color: #444;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+/* Select ruolo nella tabella */
+.role-select {
+    padding: .3rem .5rem;
+    border: 1.5px solid #cdd5e0;
+    border-radius: 6px;
+    font-size: .82rem;
+    cursor: pointer;
+}

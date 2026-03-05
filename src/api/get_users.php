@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . './../shared//db_config.php';
+require_once __DIR__ . '/../shared/db_config.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $lingua      = trim($_GET['lingua']      ?? '');
@@ -24,18 +24,18 @@ $haversine = '(6371 * ACOS(
 ))';
 
 $params = [
-    ':lingua'      => $lingua,
-    ':nazionalita' => $nazionalita,
-    ':inizio'      => $inizio,
-    ':fine'        => $fine,
+    'lingua'      => $lingua,
+    'nazionalita' => $nazionalita,
+    'inizio'      => $inizio,
+    'fine'        => $fine,
 ];
 
 $distCol = 'NULL';
 if ($lat !== false && $lng !== false && $raggio) {
     $distCol = "ROUND({$haversine}, 2)";
-    $params[':lat']  = $lat;
-    $params[':lng']  = $lng;
-    $params[':lat2'] = $lat;
+    $params['lat']  = $lat;
+    $params['lng']  = $lng;
+    $params['lat2'] = $lat;
 }
 
 $sql = "SELECT u.nome, u.cognome, u.nazionalita, u.lingua,
@@ -50,7 +50,7 @@ $sql = "SELECT u.nome, u.cognome, u.nazionalita, u.lingua,
 
 if ($lat !== false && $lng !== false && $raggio) {
     $sql .= " HAVING distanza_km <= :raggio";
-    $params[':raggio'] = $raggio;
+    $params['raggio'] = $raggio;
 }
 
 $sql .= " ORDER BY distanza_km ASC, v.data_inizio ASC";

@@ -8,8 +8,9 @@ $user = currentUser();
 $id   = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 if ($id > 0) {
-    $stmt = getPDO()->prepare('DELETE FROM viaggi WHERE id = :id AND user_id = :uid');
-    $stmt->execute([':id' => $id, ':uid' => $user['id']]);
+    getPDO()
+        ->prepare("DELETE FROM viaggi WHERE id = :id AND user_id = :uid")
+        ->execute(['id' => $id, 'uid' => $user['id']]);
 }
 
 header('Location: ./../dashboard/dashboard.php');
