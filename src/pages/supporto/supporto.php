@@ -8,11 +8,15 @@ $me  = currentUser();
 $pdo = getPDO();
 
 // Apri nuovo ticket
-$errore  = '';
+$errore   = '';
 $successo = false;
+$oggetto  = '';
+$messaggio = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $oggetto   = trim($_POST['oggetto'] ?? '');
     $messaggio = trim($_POST['messaggio'] ?? '');
+
     if (empty($oggetto) || empty($messaggio)) {
         $errore = 'Compila tutti i campi.';
     } else {
@@ -22,7 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $msg = $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)");
         $msg->execute(['tid' => $tid, 'sid' => $me['id'], 'msg' => $messaggio]);
-        $successo = true;
+
+        $successo  = true;
+        $oggetto   = '';
+        $messaggio = '';
     }
 }
 
@@ -69,13 +76,13 @@ $tickets = $tickets->fetchAll();
             <label>Oggetto</label>
             <input type="text" name="oggetto" required maxlength="255"
                    placeholder="Es. Problema con il mio viaggio"
-                   value="<?= htmlspecialchars($_POST['oggetto'] ?? '') ?>">
+                   value="<?= htmlspecialchars($oggetto) ?>">
           </div>
           <div class="full">
             <label>Messaggio</label>
             <textarea name="messaggio" required rows="5"
                       style="width:100%;padding:.65rem .85rem;border:1.5px solid #cdd5e0;border-radius:8px;font-size:.92rem;resize:vertical;font-family:inherit;"
-                      placeholder="Descrivi il tuo problema..."><?= htmlspecialchars($_POST['messaggio'] ?? '') ?></textarea>
+                      placeholder="Descrivi il tuo problema..."><?= htmlspecialchars($messaggio) ?></textarea>
           </div>
           <div class="full">
             <button type="submit" class="btn-submit">Invia richiesta</button>
