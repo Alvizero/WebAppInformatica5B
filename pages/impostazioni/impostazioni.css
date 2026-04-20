@@ -1,0 +1,37 @@
+/* impostazioni.css — eredita tutto da base.css */
+/* Stili specifici aggiuntivi per la pagina sicurezza */
+
+.impostazioni-card { /* legacy compat */ }
+
+/* Password strength indicator */
+.password-strength {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  margin-top: .4rem;
+  overflow: hidden;
+  transition: all var(--transition);
+}
+.password-strength-bar {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .3s ease, background .3s ease;
+  width: 0%;
+}
+
+.strength-weak   { background: var(--error);   width: 33%; }
+.strength-medium { background: var(--warning);  width: 66%; }
+.strength-strong { background: var(--success);  width: 100%; }
+
+.security-tip {
+  background: var(--info-bg);
+  border: 1px solid rgba(37,99,235,.15);
+  border-radius: var(--radius);
+  padding: .85rem 1rem;
+  font-size: .85rem;
+  color: var(--brand-dark);
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
