@@ -1,18 +1,40 @@
-/* =============================================
-   PROFILO
-   ============================================= */
-.profilo-card {
-  max-width: 600px;
-  margin: 2rem auto;
+/* profilo.css — eredita tutto da base.css */
+/* Stili specifici aggiuntivi per la pagina profilo */
+
+.profilo-card { /* legacy compat */ }
+
+/* Avatar animato */
+.avatar-circle {
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.avatar-circle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(37,99,235,.25);
 }
 
-.profilo-card h2 {
-  margin-bottom: .5rem;
-  color: #0077b6;
+/* Input focus con icona */
+.input-with-icon {
+  position: relative;
+}
+.input-with-icon input {
+  padding-left: 2.5rem;
+}
+.input-with-icon .input-icon {
+  position: absolute;
+  left: .85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-lt);
+  pointer-events: none;
 }
 
-.profilo-card > p {
-  margin-bottom: 1.2rem;
-  font-size: .9rem;
-  color: #555;
+/* Saved indicator */
+.save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--success);
+  animation: fadeIn .3s ease;
 }

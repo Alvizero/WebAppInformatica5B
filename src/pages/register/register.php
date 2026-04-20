@@ -59,65 +59,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VacanzaMatch – Registrazione</title>
+  <title>Registrati — VacanzaMatch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../../shared/base.css">
+  <link rel="stylesheet" href="login.css">
   <link rel="stylesheet" href="register.css">
 </head>
 <body>
 <?php include __DIR__ . '/../../shared/navbar.php'; ?>
 
-<div class="container">
-  <div class="card register-card">
-    <h2>Crea un account</h2>
+<div class="auth-page">
+  <div class="auth-visual">
+    <div class="auth-visual-inner">
+      <span class="auth-visual-deco">✈️</span>
+      <h2>Il tuo prossimo<br>viaggio ti aspetta</h2>
+      <p>Unisciti a migliaia di viaggiatori<br>che hanno già trovato compagnia.</p>
+    </div>
+  </div>
 
-    <?php if ($success): ?>
-      <div class="alert alert-success">
-        ✅ Account creato! <a href="./../login/login.php">Accedi ora →</a>
-      </div>
-    <?php else: ?>
+  <div class="auth-form-side" style="padding: 2rem;">
+    <div class="register-card">
+      <h2>Crea un account</h2>
+      <p class="auth-sub">Gratis, senza abbonamenti</p>
 
-      <?php foreach ($errors as $e): ?>
-        <div class="alert alert-error">⚠ <?= htmlspecialchars($e) ?></div>
-      <?php endforeach; ?>
-
-      <form method="POST">
-        <div class="form-grid">
-          <div>
-            <label>Nome *</label>
-            <input type="text" name="nome" required value="<?= htmlspecialchars($_POST['nome'] ?? '') ?>">
-          </div>
-          <div>
-            <label>Cognome *</label>
-            <input type="text" name="cognome" required value="<?= htmlspecialchars($_POST['cognome'] ?? '') ?>">
-          </div>
-          <div class="full">
-            <label>Email *</label>
-            <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
-          </div>
-          <div>
-            <label>Password * <small>(min 8 caratteri)</small></label>
-            <input type="password" name="password" required minlength="8">
-          </div>
-          <div>
-            <label>Conferma password *</label>
-            <input type="password" name="password2" required minlength="8">
-          </div>
-          <div>
-            <label>Nazionalità *</label>
-            <input type="text" name="nazionalita" required value="<?= htmlspecialchars($_POST['nazionalita'] ?? '') ?>">
-          </div>
-          <div>
-            <label>Lingua principale *</label>
-            <input type="text" name="lingua" required value="<?= htmlspecialchars($_POST['lingua'] ?? '') ?>">
-          </div>
+      <?php if ($success): ?>
+        <div class="alert alert-success">
+          ✅ Account creato con successo! <a href="./../login/login.php" style="font-weight:600;">Accedi ora →</a>
         </div>
-        <button type="submit" class="btn-submit">Registrati</button>
-      </form>
+      <?php else: ?>
+        <?php foreach ($errors as $e): ?>
+          <div class="alert alert-error">⚠ <?= htmlspecialchars($e) ?></div>
+        <?php endforeach; ?>
 
-      <p class="register-footer">
-        Hai già un account? <a href="./../login/login.php">Accedi</a>
-      </p>
-    <?php endif; ?>
+        <form method="POST">
+          <div class="form-grid">
+            <div>
+              <div class="input-wrap">
+                <label>Nome *</label>
+                <input type="text" name="nome" required value="<?= htmlspecialchars($_POST['nome'] ?? '') ?>" placeholder="Mario">
+              </div>
+            </div>
+            <div>
+              <div class="input-wrap">
+                <label>Cognome *</label>
+                <input type="text" name="cognome" required value="<?= htmlspecialchars($_POST['cognome'] ?? '') ?>" placeholder="Rossi">
+              </div>
+            </div>
+            <div class="full">
+              <div class="input-wrap">
+                <label>Email *</label>
+                <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" placeholder="mario@esempio.it">
+              </div>
+            </div>
+            <div>
+              <div class="input-wrap">
+                <label>Password * <span style="font-weight:400;text-transform:none;letter-spacing:0;">(min 8 car.)</span></label>
+                <input type="password" name="password" required minlength="8" placeholder="••••••••">
+              </div>
+            </div>
+            <div>
+              <div class="input-wrap">
+                <label>Conferma password *</label>
+                <input type="password" name="password2" required minlength="8" placeholder="••••••••">
+              </div>
+            </div>
+            <div>
+              <div class="input-wrap">
+                <label>Nazionalità *</label>
+                <input type="text" name="nazionalita" required value="<?= htmlspecialchars($_POST['nazionalita'] ?? '') ?>" placeholder="Italiana">
+              </div>
+            </div>
+            <div>
+              <div class="input-wrap">
+                <label>Lingua principale *</label>
+                <input type="text" name="lingua" required value="<?= htmlspecialchars($_POST['lingua'] ?? '') ?>" placeholder="Italiano">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" style="margin-top:.5rem;">
+            Crea account →
+          </button>
+        </form>
+
+        <p class="register-footer">
+          Hai già un account? <a href="./../login/login.php">Accedi</a>
+        </p>
+      <?php endif; ?>
+    </div>
   </div>
 </div>
 

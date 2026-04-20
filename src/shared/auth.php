@@ -13,18 +13,18 @@ function isLoggedIn(): bool {
 // Qualsiasi livello admin (< 255)
 function isAdmin(): bool {
     startSession();
-    return isset($_SESSION['admin_level']) && $_SESSION['admin_level'] < 255;
+    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] < 255;
 }
 
 // Livello specifico o superiore (numero più basso = più potere)
 function isAdminLevel(int $maxLevel): bool {
     startSession();
-    return isset($_SESSION['admin_level']) && $_SESSION['admin_level'] <= $maxLevel;
+    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] <= $maxLevel;
 }
 
 function getAdminLevel(): int {
     startSession();
-    return $_SESSION['admin_level'] ?? 255;
+    return $_SESSION['livello_utente'] ?? 255;
 }
 
 function adminLevelLabel(int $level): string {
@@ -68,7 +68,7 @@ function currentUser(): array {
         'cognome'     => $_SESSION['user_cognome']  ?? '',
         'lingua'      => $_SESSION['user_lingua']   ?? '',
         'nazionalita' => $_SESSION['user_naz']      ?? '',
-        'admin_level' => $_SESSION['admin_level']   ?? 255,
+        'livello_utente' => $_SESSION['livello_utente']   ?? 255,
     ];
 }
 
@@ -80,7 +80,7 @@ function loginUser(array $user): void {
     $_SESSION['user_cognome'] = $user['cognome'];
     $_SESSION['user_lingua']  = $user['lingua'];
     $_SESSION['user_naz']     = $user['nazionalita'];
-    $_SESSION['admin_level']  = (int)$user['admin_level'];
+    $_SESSION['livello_utente']  = (int)$user['livello_utente'];
 }
 
 function logoutUser(): void {

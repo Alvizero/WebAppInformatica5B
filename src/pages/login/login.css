@@ -1,43 +1,187 @@
-/* =============================================
-   LOGIN
-   ============================================= */
-.login-card {
-  max-width: 420px;
-  margin: 2rem auto;
+/* ── LOGIN / REGISTER shared layout ── */
+.auth-page {
+  min-height: calc(100vh - 62px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
-.login-card h2 {
-  margin-bottom: 1.2rem;
-  color: #0077b6;
+.auth-visual {
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
 }
-
-.login-card label {
-  display: block;
-  font-size: .85rem;
-  font-weight: 600;
-  margin-bottom: .35rem;
-  color: #444;
+.auth-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(30,111,168,.3) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 70%, rgba(200,169,110,.15) 0%, transparent 50%);
 }
-
-.login-card input[type="email"],
-.login-card input[type="password"] {
-  width: 100%;
-  padding: .65rem .85rem;
-  border: 1.5px solid #cdd5e0;
-  border-radius: 8px;
-  font-size: .95rem;
-  margin-bottom: 1rem;
-  transition: border-color .2s;
-}
-
-.login-card input:focus {
-  outline: none;
-  border-color: #0077b6;
-}
-
-.login-footer {
+.auth-visual-inner {
+  position: relative;
   text-align: center;
-  margin-top: 1rem;
-  font-size: .9rem;
-  color: #666;
+}
+.auth-visual h2 {
+  color: var(--surface);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: .8rem;
+}
+.auth-visual p { color: var(--muted-lt); font-size: 1rem; }
+
+.auth-visual-deco {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.auth-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: var(--surface);
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-box h2 {
+  margin-bottom: .35rem;
+  font-size: 1.8rem;
+}
+.auth-box .auth-sub {
+  color: var(--muted);
+  font-size: .92rem;
+  margin-bottom: 2rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: .88rem;
+  color: var(--muted);
+}
+.auth-footer a { font-weight: 600; color: var(--ocean); }
+
+.input-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.input-wrap label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: .4rem;
+}
+.input-wrap input {
+  margin-bottom: 0;
+}
+
+@media (max-width: 750px) {
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-visual { display: none; }
+}
+
+/* ── LOGIN / REGISTER shared layout ── */
+.auth-page {
+  min-height: calc(100vh - 62px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.auth-visual {
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.auth-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(30,111,168,.3) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 70%, rgba(200,169,110,.15) 0%, transparent 50%);
+}
+.auth-visual-inner {
+  position: relative;
+  text-align: center;
+}
+.auth-visual h2 {
+  color: var(--surface);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-bottom: .8rem;
+}
+.auth-visual p { color: var(--muted-lt); font-size: 1rem; }
+
+.auth-visual-deco {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.auth-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: var(--surface);
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-box h2 {
+  margin-bottom: .35rem;
+  font-size: 1.8rem;
+}
+.auth-box .auth-sub {
+  color: var(--muted);
+  font-size: .92rem;
+  margin-bottom: 2rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: .88rem;
+  color: var(--muted);
+}
+.auth-footer a { font-weight: 600; color: var(--ocean); }
+
+.input-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.input-wrap label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: .4rem;
+}
+.input-wrap input {
+  margin-bottom: 0;
+}
+
+@media (max-width: 750px) {
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-visual { display: none; }
 }

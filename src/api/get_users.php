@@ -11,10 +11,6 @@ $lat         = filter_input(INPUT_GET, 'lat',    FILTER_VALIDATE_FLOAT);
 $lng         = filter_input(INPUT_GET, 'lng',    FILTER_VALIDATE_FLOAT);
 $raggio      = filter_input(INPUT_GET, 'raggio', FILTER_VALIDATE_INT);
 
-if (empty($lingua) && empty($nazionalita)) {
-    echo json_encode([]); exit;
-}
-
 $pdo = getPDO();
 
 $haversine = '(6371 * ACOS(
@@ -24,8 +20,6 @@ $haversine = '(6371 * ACOS(
 ))';
 
 $params = [
-    'lingua'      => $lingua,
-    'nazionalita' => $nazionalita,
     'inizio'      => $inizio,
     'fine'        => $fine,
 ];
@@ -44,9 +38,17 @@ $sql = "SELECT u.nome, u.cognome, u.nazionalita, u.lingua,
                {$distCol} AS distanza_km
         FROM viaggi v
         JOIN users u ON u.id = v.user_id
-        WHERE (u.lingua = :lingua OR u.nazionalita = :nazionalita)
-          AND v.data_inizio <= :fine
+        WHERE v.data_inizio <= :fine
           AND v.data_fine   >= :inizio";
+
+if (!empty($lingua)) {
+    $sql .= " AND u.lingua = :lingua";
+    $params['lingua'] = $lingua;
+}
+if (!empty($nazionalita)) {
+    $sql .= " AND u.nazionalita = :nazionalita";
+    $params['nazionalita'] = $nazionalita;
+}
 
 if ($lat !== false && $lng !== false && $raggio) {
     $sql .= " HAVING distanza_km <= :raggio";

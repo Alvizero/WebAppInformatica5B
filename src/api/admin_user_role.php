@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 $pdo     = getPDO();
 $me      = currentUser();
 $user_id = isset($_POST['user_id'])     ? (int)$_POST['user_id']     : 0;
-$level   = isset($_POST['admin_level']) ? (int)$_POST['admin_level'] : -1;
+$level   = isset($_POST['livello_utente']) ? (int)$_POST['livello_utente'] : -1;
 
 if ($user_id <= 0) {
     $_SESSION['reset_error'] = '❌ ID utente non valido.';
@@ -30,7 +30,7 @@ if (!in_array($level, $valoriAmmessi, true)) {
     exit;
 }
 
-$stmt = $pdo->prepare("UPDATE users SET admin_level = :level WHERE id = :id");
+$stmt = $pdo->prepare("UPDATE users SET livello_utente = :level WHERE id = :id");
 $stmt->execute(['level' => $level, 'id' => $user_id]);
 
 $labels = [0 => 'Super Admin', 1 => 'Admin', 2 => 'Moderatore', 255 => 'Utente'];
