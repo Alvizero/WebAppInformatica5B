@@ -113,20 +113,35 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
         <div class="full">
           <div class="input-wrap">
             <label>Password attuale *</label>
-            <input type="password" name="password_attuale" required placeholder="La tua password attuale">
+            <div style="position:relative;">
+              <input type="password" name="password_attuale" id="old-pass" required placeholder="La tua password attuale">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('old-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
           </div>
         </div>
         <div>
           <div class="input-wrap">
             <label>Nuova password *</label>
-            <input type="password" name="password_nuova" id="new-pass" required minlength="8" placeholder="Min. 8 caratteri" oninput="checkStrength(this.value)">
+            <div style="position:relative;">
+              <input type="password" name="password_nuova" id="new-pass" required minlength="8" placeholder="Min. 8 caratteri" oninput="checkStrength(this.value)">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
             <div class="password-strength"><div class="password-strength-bar" id="strength-bar"></div></div>
           </div>
         </div>
         <div>
           <div class="input-wrap">
             <label>Conferma nuova password *</label>
-            <input type="password" name="password_repeat" required minlength="8" placeholder="Ripeti la nuova password">
+            <div style="position:relative;">
+              <input type="password" name="password_repeat" id="repeat-pass" required minlength="8" placeholder="Ripeti la nuova password">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('repeat-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="full">
@@ -154,6 +169,20 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
     if (score <= 1) bar.classList.add('strength-weak');
     else if (score <= 2) bar.classList.add('strength-medium');
     else bar.classList.add('strength-strong');
+  }
+  
+  function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const btn = event.currentTarget;
+    if (field.type === 'password') {
+      field.type = 'text';
+      btn.innerHTML = '<span class="eye-icon">👁️‍🗨️</span>';
+      btn.style.color = 'var(--brand)';
+    } else {
+      field.type = 'password';
+      btn.innerHTML = '<span class="eye-icon">👁️</span>';
+      btn.style.color = 'var(--muted)';
+    }
   }
 </script>
 <script src="../../shared/app.js"></script>

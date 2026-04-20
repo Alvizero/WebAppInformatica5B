@@ -3,6 +3,57 @@
   padding: 2rem 0 3rem;
 }
 
+/* ── Breadcrumb Nav ── */
+.supporto-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+  animation: fadeUp .25s ease both;
+}
+
+.supporto-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--transition);
+  line-height: 1;
+}
+
+.supporto-back-btn:hover {
+  color: var(--brand);
+}
+
+.supporto-back-btn svg {
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+.supporto-back-btn:hover svg {
+  transform: translateX(-3px);
+}
+
+.nav-separator {
+  font-size: .85rem;
+  color: var(--muted-lt);
+  user-select: none;
+  line-height: 1;
+}
+
+.nav-current {
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+
 /* ── Hero Section ── */
 .supporto-hero {
   background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
@@ -10,11 +61,17 @@
   padding: 2.5rem 2rem;
   margin-bottom: 2rem;
   color: #fff;
-  text-align: center;
   position: relative;
   overflow: hidden;
   animation: fadeUp .35s ease both;
+  text-align: center;
 }
+
+.supporto-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
 .supporto-hero::before {
   content: '';
   position: absolute;
@@ -26,6 +83,7 @@
   background: rgba(255,255,255,.06);
   pointer-events: none;
 }
+
 .supporto-hero::after {
   content: '';
   position: absolute;
@@ -37,11 +95,13 @@
   background: rgba(255,255,255,.04);
   pointer-events: none;
 }
+
 .supporto-hero h1 {
   color: #fff;
   font-size: 1.75rem;
   margin-bottom: .5rem;
 }
+
 .supporto-hero p {
   color: rgba(255,255,255,.85);
   font-size: 1rem;
@@ -104,6 +164,7 @@
   text-decoration: none;
   animation: fadeUp .3s ease both;
 }
+
 .ticket-item:hover {
   border-color: rgba(37,99,235,.25);
   box-shadow: var(--shadow);
@@ -143,6 +204,7 @@
   color: var(--muted-lt);
   transition: transform var(--transition), color var(--transition);
 }
+
 .ticket-item:hover .ticket-arrow {
   transform: translateX(3px);
   color: var(--brand);
@@ -157,11 +219,13 @@
   border-radius: var(--radius-xl);
   animation: fadeIn .4s ease;
 }
+
 .empty-tickets .empty-icon {
   font-size: 2.5rem;
   display: block;
   margin-bottom: .75rem;
 }
+
 .empty-tickets strong {
   display: block;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -169,6 +233,7 @@
   color: var(--ink);
   margin-bottom: .4rem;
 }
+
 .empty-tickets p {
   font-size: .875rem;
   color: var(--muted);
@@ -201,6 +266,7 @@
 .new-ticket-card .input-wrap {
   margin-bottom: .85rem;
 }
+
 .new-ticket-card label {
   font-size: .75rem;
   font-weight: 700;
@@ -210,6 +276,7 @@
   margin-bottom: .4rem;
   display: block;
 }
+
 .new-ticket-card input[type="text"],
 .new-ticket-card textarea {
   width: 100%;
@@ -222,6 +289,7 @@
   font-family: 'Inter', sans-serif;
   transition: all var(--transition);
 }
+
 .new-ticket-card input:focus,
 .new-ticket-card textarea:focus {
   outline: none;
@@ -229,6 +297,7 @@
   box-shadow: 0 0 0 3px var(--brand-glow);
   background: var(--white);
 }
+
 .new-ticket-card textarea {
   resize: vertical;
   min-height: 110px;
@@ -239,5 +308,18 @@
   .supporto-layout {
     grid-template-columns: 1fr;
   }
-  .new-ticket-card { position: static; }
+
+  .new-ticket-card {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .supporto-nav {
+    margin-bottom: 1rem;
+  }
+
+  .supporto-back-btn span {
+    display: inline; /* sempre visibile — il breadcrumb è già compatto */
+  }
 }

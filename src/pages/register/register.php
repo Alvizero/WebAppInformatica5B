@@ -115,13 +115,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div>
               <div class="input-wrap">
                 <label>Password * <span style="font-weight:400;text-transform:none;letter-spacing:0;">(min 8 car.)</span></label>
-                <input type="password" name="password" required minlength="8" placeholder="••••••••">
+                <div style="position:relative;">
+                  <input type="password" name="password" id="password1" required minlength="8" placeholder="••••••••">
+                  <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password1')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+                    <span class="eye-icon">👁️</span>
+                  </button>
+                </div>
               </div>
             </div>
             <div>
               <div class="input-wrap">
                 <label>Conferma password *</label>
-                <input type="password" name="password2" required minlength="8" placeholder="••••••••">
+                <div style="position:relative;">
+                  <input type="password" name="password2" id="password2" required minlength="8" placeholder="••••••••">
+                  <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password2')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+                    <span class="eye-icon">👁️</span>
+                  </button>
+                </div>
               </div>
             </div>
             <div>
@@ -150,6 +160,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
+<script>
+function togglePasswordVisibility(fieldId) {
+  const field = document.getElementById(fieldId);
+  const btn = event.currentTarget;
+  if (field.type === 'password') {
+    field.type = 'text';
+    btn.innerHTML = '<span class="eye-icon">👁️‍🗨️</span>';
+    btn.style.color = 'var(--brand)';
+  } else {
+    field.type = 'password';
+    btn.innerHTML = '<span class="eye-icon">👁️</span>';
+    btn.style.color = 'var(--muted)';
+  }
+}
+</script>
 <script src="../../shared/app.js"></script>
 </body>
 </html>

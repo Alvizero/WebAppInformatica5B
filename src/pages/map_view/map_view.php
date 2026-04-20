@@ -64,7 +64,7 @@ requireLogin();
             <label class="filter-label" style="margin:0;">Raggio di ricerca</label>
             <span class="range-val-badge"><span id="raggio-val">10</span> km</span>
           </div>
-          <input type="range" id="f-raggio" min="5" max="200" step="5" value="10"
+          <input type="range" id="f-raggio" min="5" max="67" step="5" value="10"
             oninput="document.getElementById('raggio-val').textContent = this.value">
         </div>
       </div>

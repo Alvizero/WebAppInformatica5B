@@ -77,6 +77,10 @@ $messaggi = $messaggi->fetchAll();
       text-decoration: none;
       margin-bottom: .2rem;
       transition: color var(--transition);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
     }
     .chat-back:hover { color: var(--brand-dark); }
     .chat-topbar h2 {
@@ -212,10 +216,10 @@ $messaggi = $messaggi->fetchAll();
   <div class="chat-wrapper">
     <div class="chat-topbar">
       <div class="chat-topbar-left">
-        <a href="./supporto.php" class="chat-back">
+        <button onclick="history.back()" class="chat-back" title="Torna indietro">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Torna ai ticket
-        </a>
+          Indietro
+        </button>
         <h2><?= htmlspecialchars($ticket['oggetto']) ?></h2>
       </div>
       <span class="badge badge-<?= $ticket['stato'] ?>"><?= strtoupper($ticket['stato']) ?></span>

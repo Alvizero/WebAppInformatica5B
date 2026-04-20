@@ -50,10 +50,25 @@ $tickets = $tickets->fetchAll();
 
 <div class="container supporto-page">
 
+  <!-- Breadcrumb / navigazione -->
+  <nav class="supporto-nav" aria-label="Navigazione pagina">
+    <button onclick="history.back()" class="supporto-back-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span>Indietro</span>
+    </button>
+    <span class="nav-separator" aria-hidden="true">/</span>
+    <span class="nav-current">Supporto</span>
+  </nav>
+
   <!-- Hero -->
   <div class="supporto-hero">
-    <h1>Come possiamo aiutarti?</h1>
-    <p>Apri un ticket e il nostro team ti risponderà il prima possibile. Siamo qui per te.</p>
+    <div class="supporto-hero-content">
+      <h1>Come possiamo aiutarti?</h1>
+      <p>Apri un ticket e il nostro team ti risponderà il prima possibile. Siamo qui per te.</p>
+    </div>
   </div>
 
   <div class="supporto-layout">
