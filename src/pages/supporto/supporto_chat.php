@@ -13,17 +13,15 @@ $ticket->execute([':id' => $ticket_id, ':uid' => $user['id']]);
 $ticket = $ticket->fetch();
 
 if (!$ticket) {
-    header('Location: ./supporto.php');
-    exit;
+    redirect('supporto.php');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $ticket['stato'] !== 'chiuso') {
     $msg = trim($_POST['messaggio'] ?? '');
     if (!empty($msg)) {
-        $ins = $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)");
-        $ins->execute([':tid' => $ticket_id, ':sid' => $user['id'], ':msg' => $msg]);
-        header('Location: ./supporto_chat.php?ticket=' . $ticket_id);
-        exit;
+        $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)")
+            ->execute([':tid' => $ticket_id, ':sid' => $user['id'], ':msg' => $msg]);
+        redirect("supporto_chat.php?ticket=$ticket_id");
     }
 }
 

@@ -88,3 +88,29 @@ function logoutUser(): void {
     session_unset();
     session_destroy();
 }
+
+/**
+ * Gestione Messaggi Flash e Redirect
+ */
+function setFlash(string $key, string $msg): void {
+    startSession();
+    $_SESSION[$key] = $msg;
+}
+
+function getFlash(string $key): ?string {
+    startSession();
+    if (empty($_SESSION[$key])) return null;
+    $msg = $_SESSION[$key];
+    unset($_SESSION[$key]);
+    return $msg;
+}
+
+function redirect(string $url, ?string $success = null, ?string $error = null): void {
+    if ($success || $error) {
+        $sep = str_contains($url, '?') ? '&' : '?';
+        if ($success) $url .= $sep . 'success_msg=' . urlencode($success);
+        if ($error)   $url .= ($success ? '&' : $sep) . 'error_msg=' . urlencode($error);
+    }
+    header("Location: $url");
+    exit;
+}

@@ -5,12 +5,10 @@ require_once __DIR__ . '/../shared/auth.php';
 requireLogin();
 
 $user = currentUser();
-$id   = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-
+$id = (int)($_POST['id'] ?? 0);
 if ($id > 0) {
-    $pdo = getPDO();
-    $stmt = $pdo->prepare("DELETE FROM viaggi WHERE id = :id AND user_id = :uid");
-    $stmt->execute(['id' => $id, 'uid' => $user['id']]);
+    getPDO()->prepare("DELETE FROM viaggi WHERE id = :id AND user_id = :uid")
+        ->execute(['id' => $id, 'uid' => currentUser()['id']]);
 }
 
-header('Location: ./../pages/dashboard/dashboard.php?success_msg=' . urlencode('Viaggio eliminato con successo!'));exit;
+redirect('../pages/dashboard/dashboard.php', 'Viaggio eliminato con successo!');

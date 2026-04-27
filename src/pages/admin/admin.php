@@ -7,21 +7,11 @@ require_once __DIR__ . '/../../shared/auth.php';
 require_once __DIR__ . '/../../shared/db_config.php';
 requireAdmin();
 
-if (session_status() === PHP_SESSION_NONE) session_start();
-
 $me  = currentUser();
 $pdo = getPDO();
 
-$resetMsg = '';
-if (!empty($_SESSION['reset_msg'])) {
-    $resetMsg = $_SESSION['reset_msg'];
-    unset($_SESSION['reset_msg']);
-}
-$errorMsg = '';
-if (!empty($_SESSION['reset_error'])) {
-    $errorMsg = $_SESSION['reset_error'];
-    unset($_SESSION['reset_error']);
-}
+$resetMsg = getFlash('reset_msg');
+$errorMsg = getFlash('reset_error');
 
 $numUtenti  = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $numViaggi  = $pdo->query("SELECT COUNT(*) FROM viaggi")->fetchColumn();

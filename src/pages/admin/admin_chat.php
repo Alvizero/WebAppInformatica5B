@@ -13,17 +13,15 @@ $ticket->execute(['id' => $ticket_id]);
 $ticket = $ticket->fetch();
 
 if (!$ticket) {
-    header('Location: ./admin.php');
-    exit;
+    redirect('admin.php');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty(trim($_POST['messaggio'] ?? ''))) {
     $msg = trim($_POST['messaggio']);
-    $ins = $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)");
-    $ins->execute(['tid' => $ticket_id, 'sid' => $me['id'], 'msg' => $msg]);
+    $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)")
+        ->execute(['tid' => $ticket_id, 'sid' => $me['id'], 'msg' => $msg]);
     $pdo->prepare("UPDATE support_tickets SET stato='risposto' WHERE id=:id")->execute(['id' => $ticket_id]);
-    header('Location: ./admin_chat.php?ticket=' . $ticket_id);
-    exit;
+    redirect("admin_chat.php?ticket=$ticket_id");
 }
 
 $messaggi = $pdo->prepare("

@@ -59,29 +59,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
 <div class="container settings-page">
   <div class="settings-layout">
 
-    <!-- Sidebar -->
-    <div class="settings-sidebar">
-      <div class="settings-sidebar-profile">
-        <div class="avatar-circle"><?= htmlspecialchars($initials) ?></div>
-        <div class="user-name"><?= htmlspecialchars($dbUser['nome'] . ' ' . $dbUser['cognome']) ?></div>
-        <div class="user-email"><?= htmlspecialchars($dbUser['email']) ?></div>
-      </div>
-      <nav class="settings-nav">
-        <a href="./../profilo/profilo.php">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          Profilo
-        </a>
-        <a href="impostazioni.php" class="active">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Sicurezza
-        </a>
-
-        <a href="./../supporto/supporto.php">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Supporto
-        </a>
-      </nav>
-    </div>
+    <?php $activePage = 'impostazioni'; include __DIR__ . '/../../shared/settings_sidebar.php'; ?>
 
     <!-- Form -->
     <div class="settings-card">
@@ -115,7 +93,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
             <label>Password attuale *</label>
             <div style="position:relative;">
               <input type="password" name="password_attuale" id="old-pass" required placeholder="La tua password attuale">
-              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('old-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('old-pass', event)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
                 <span class="eye-icon">👁️</span>
               </button>
             </div>
@@ -126,7 +104,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
             <label>Nuova password *</label>
             <div style="position:relative;">
               <input type="password" name="password_nuova" id="new-pass" required minlength="8" placeholder="Min. 8 caratteri" oninput="checkStrength(this.value)">
-              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-pass', event)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
                 <span class="eye-icon">👁️</span>
               </button>
             </div>
@@ -138,7 +116,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
             <label>Conferma nuova password *</label>
             <div style="position:relative;">
               <input type="password" name="password_repeat" id="repeat-pass" required minlength="8" placeholder="Ripeti la nuova password">
-              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('repeat-pass')" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('repeat-pass', event)" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:.25rem;color:var(--muted);font-size:1.1rem;transition:color var(--transition);">
                 <span class="eye-icon">👁️</span>
               </button>
             </div>
@@ -171,19 +149,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
     else bar.classList.add('strength-strong');
   }
   
-  function togglePasswordVisibility(fieldId) {
-    const field = document.getElementById(fieldId);
-    const btn = event.currentTarget;
-    if (field.type === 'password') {
-      field.type = 'text';
-      btn.innerHTML = '<span class="eye-icon">👁️‍🗨️</span>';
-      btn.style.color = 'var(--brand)';
-    } else {
-      field.type = 'password';
-      btn.innerHTML = '<span class="eye-icon">👁️</span>';
-      btn.style.color = 'var(--muted)';
-    }
-  }
+
 </script>
 <script src="../../shared/app.js"></script>
 </body>

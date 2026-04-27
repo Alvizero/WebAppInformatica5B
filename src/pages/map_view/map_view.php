@@ -46,7 +46,7 @@ requireLogin();
       </div>
 
       <div class="filter-section">
-        <label class="filter-label">Destinazione (opzionale)</label>
+        <label class="filter-label">Destinazione</label>
         <div class="search-bar-map">
           <input type="text" id="f-citta" placeholder="es. Barcellona, Roma…">
           <button type="button" onclick="geocodeCitta()" title="Cerca città">
@@ -227,16 +227,6 @@ requireLogin();
       const bounds = markersLayer.getLayers().map(l => l.getLatLng());
       map.fitBounds(L.latLngBounds(bounds).pad(0.3));
     }
-  }
-
-  // ── Toast notification ──
-  function showToast(msg, type = 'info') {
-    const colors = { info: '#2563eb', error: '#ef4444', warning: '#f59e0b', success: '#10b981' };
-    const t = document.createElement('div');
-    t.style.cssText = `position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:#fff;border:1.5px solid ${colors[type]};color:${colors[type]};padding:.75rem 1.1rem;border-radius:12px;font-size:.875rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.12);animation:slideDown .25s ease;font-family:'Inter',sans-serif;max-width:300px;`;
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3000);
   }
 
   function escHtml(str) {

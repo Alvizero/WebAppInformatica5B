@@ -1,5 +1,3 @@
-/* VacanzaMatch — app.js v3 */
-
 // ── Navbar scroll effect ──
 (function () {
   const header = document.getElementById('main-header');
@@ -116,3 +114,14 @@ window.showToast = function(msg, type = 'info') {
   }, { threshold: 0.1 });
   items.forEach(el => observer.observe(el));
 })();
+
+// ── Password Visibility Toggle ──
+function togglePasswordVisibility(fieldId, event) {
+  const field = document.getElementById(fieldId);
+  const btn = event.currentTarget;
+  if (!field || !btn) return;
+  const isPassword = field.type === 'password';
+  field.type = isPassword ? 'text' : 'password';
+  btn.innerHTML = isPassword ? '<span class="eye-icon">👁️‍🗨️</span>' : '<span class="eye-icon">👁️</span>';
+  btn.style.color = isPassword ? 'var(--brand)' : 'var(--muted)';
+}

@@ -25,8 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insMsg = $pdo->prepare("INSERT INTO support_messages (ticket_id, sender_id, messaggio) VALUES (:tid, :sid, :msg)");
         $insMsg->execute([':tid' => $ticketId, ':sid' => $user['id'], ':msg' => $messaggio]);
 
-        header('Location: supporto.php?success_msg=' . urlencode('Ticket aperto con successo!'));
-        exit;
+        redirect('supporto.php', 'Ticket aperto con successo!');
     }
 }
 

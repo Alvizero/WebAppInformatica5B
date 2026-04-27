@@ -7,7 +7,7 @@ requireLogin();
 $user = currentUser();
 $pdo  = getPDO();
 
-$id     = isset($_POST['id']) ? (int)$_POST['id'] : null;
+$id     = (int)($_POST['id'] ?? 0);
 $dest   = trim($_POST['destinazione'] ?? '');
 $lat    = filter_input(INPUT_POST, 'latitudine',  FILTER_VALIDATE_FLOAT);
 $lng    = filter_input(INPUT_POST, 'longitudine', FILTER_VALIDATE_FLOAT);
@@ -15,19 +15,20 @@ $inizio = $_POST['data_inizio'] ?? '';
 $fine   = $_POST['data_fine']   ?? '';
 
 if (!$dest || $lat === false || $lng === false || !$inizio || !$fine || $fine < $inizio) {
-    header('Location: ./../pages/dashboard/dashboard.php?error_msg=' . urlencode('Dati non validi o date non corrette.'));
-    exit;
+    redirect('../pages/dashboard/dashboard.php', null, 'Dati non validi o date non corrette.');
 }
 
-if ($id) {
-    $stmt = $pdo->prepare("UPDATE viaggi SET destinazione=:dest, latitudine=:lat, longitudine=:lng, data_inizio=:inizio, data_fine=:fine WHERE id=:id AND user_id=:uid");
-    $stmt->execute(['dest'=>$dest, 'lat'=>$lat, 'lng'=>$lng, 'inizio'=>$inizio, 'fine'=>$fine, 'id'=>$id, 'uid'=>$user['id']]);
+$params = ['uid'=>$user['id'], 'dest'=>$dest, 'lat'=>$lat, 'lng'=>$lng, 'inizio'=>$inizio, 'fine'=>$fine];
+
+if ($id > 0) {
+    $params['id'] = $id;
+    getPDO()->prepare("UPDATE viaggi SET destinazione=:dest, latitudine=:lat, longitudine=:lng, data_inizio=:inizio, data_fine=:fine WHERE id=:id AND user_id=:uid")
+        ->execute($params);
     $msg = "Viaggio aggiornato con successo!";
 } else {
-    $stmt = $pdo->prepare("INSERT INTO viaggi (user_id, destinazione, latitudine, longitudine, data_inizio, data_fine) VALUES (:uid, :dest, :lat, :lng, :inizio, :fine)");
-    $stmt->execute(['uid'=>$user['id'], 'dest'=>$dest, 'lat'=>$lat, 'lng'=>$lng, 'inizio'=>$inizio, 'fine'=>$fine]);
+    getPDO()->prepare("INSERT INTO viaggi (user_id, destinazione, latitudine, longitudine, data_inizio, data_fine) VALUES (:uid, :dest, :lat, :lng, :inizio, :fine)")
+        ->execute($params);
     $msg = "Nuovo viaggio creato con successo!";
 }
 
-header('Location: ./../pages/dashboard/dashboard.php?success_msg=' . urlencode($msg));
-exit;
+redirect('../pages/dashboard/dashboard.php', $msg);
