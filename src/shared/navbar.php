@@ -2,6 +2,7 @@
 require_once __DIR__ . '/auth.php';
 startSession();
 ?>
+
 <header id="main-header">
   <a href="./../index/index.php" class="logo">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -44,7 +45,7 @@ startSession();
             <div class="nav-avatar-lg"><?= strtoupper(mb_substr($u['nome'], 0, 1)) ?></div>
             <div>
               <div class="nav-profile-full"><?= htmlspecialchars($u['nome'] . ' ' . $u['cognome']) ?></div>
-              <div class="nav-profile-sub"><?= htmlspecialchars($u['nazionalita']) ?> · <?= htmlspecialchars($u['lingua']) ?></div>
+              <div class="nav-profile-sub"><?= htmlspecialchars(ucfirst($_SESSION['user_naz_nome'] ?? '')) ?> · <?= htmlspecialchars(ucfirst($_SESSION['user_lingua_nome'] ?? '')) ?></div>
             </div>
           </div>
 

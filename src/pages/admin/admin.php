@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../shared/auth.php';
 require_once __DIR__ . '/../../shared/db_config.php';
+require_once __DIR__ . '/../../shared/lookup_helper.php';
 requireAdmin();
 
 if (session_status() === PHP_SESSION_NONE) session_start();
@@ -12,6 +13,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 $me  = currentUser();
 $pdo = getPDO();
 
+<<<<<<< Updated upstream
 $resetMsg = '';
 if (!empty($_SESSION['reset_msg'])) {
     $resetMsg = $_SESSION['reset_msg'];
@@ -23,14 +25,20 @@ if (!empty($_SESSION['reset_error'])) {
     unset($_SESSION['reset_error']);
 }
 
+=======
+>>>>>>> Stashed changes
 $numUtenti  = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $numViaggi  = $pdo->query("SELECT COUNT(*) FROM viaggi")->fetchColumn();
 $numTickets = $pdo->query("SELECT COUNT(*) FROM support_tickets")->fetchColumn();
 $numAperti  = $pdo->query("SELECT COUNT(*) FROM support_tickets WHERE stato='aperto'")->fetchColumn();
 
-$utenti  = $pdo->query("SELECT id, nome, cognome, email, livello_utente, nazionalita, lingua, created_at FROM users ORDER BY livello_utente ASC, created_at DESC")->fetchAll();
+$utenti  = $pdo->query("SELECT u.id, u.nome, u.cognome, u.email, u.livello_utente, u.nazionalita_id, u.lingua_id, u.created_at, n.nome AS nazionalita_nome, l.nome AS lingua_nome FROM users u LEFT JOIN nazionalita n ON n.id = u.nazionalita_id LEFT JOIN lingue l ON l.id = u.lingua_id ORDER BY u.livello_utente ASC, u.created_at DESC")->fetchAll();
 $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC")->fetchAll();
 $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOIN users u ON u.id = t.user_id ORDER BY t.created_at DESC")->fetchAll();
+
+// Prepara le option dei select per il modal
+$optNaz  = nazionalitaOptions();
+$optLing = lingueOptions();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -47,21 +55,6 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
 <?php include __DIR__ . '/../../shared/navbar.php'; ?>
 
 <div class="container admin-page">
-
-  <?php if ($resetMsg): ?>
-    <div class="alert alert-success" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <?= htmlspecialchars($resetMsg) ?>
-      <br><small style="opacity:.8;margin-top:.3rem;display:block;">Comunica la password temporanea all'utente e invitalo a cambiarla subito.</small>
-    </div>
-  <?php endif; ?>
-
-  <?php if ($errorMsg): ?>
-    <div class="alert alert-error" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <?= htmlspecialchars($errorMsg) ?>
-    </div>
-  <?php endif; ?>
 
   <!-- Header -->
   <div class="admin-page-header">
@@ -143,7 +136,7 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
             </thead>
             <tbody>
               <?php foreach ($utenti as $u): ?>
-                <tr>
+                <tr data-naz="<?= htmlspecialchars($u['nazionalita_nome'] ?? '') ?>" data-lingua="<?= htmlspecialchars($u['lingua_nome'] ?? '') ?>">
                   <td><?= $u['id'] ?></td>
                   <td><strong><?= htmlspecialchars($u['nome'] . ' ' . $u['cognome']) ?></strong></td>
                   <td><?= htmlspecialchars($u['email']) ?></td>
@@ -152,7 +145,7 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
                   <td>
                     <div class="row-actions">
                       <button type="button" class="btn-edit" title="Modifica dati"
-                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>','<?= htmlspecialchars(addslashes($u['nazionalita'] ?? '')) ?>','<?= htmlspecialchars(addslashes($u['lingua'] ?? '')) ?>')">
+                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>',<?= (int)$u['nazionalita_id'] ?>,<?= (int)$u['lingua_id'] ?>)">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Modifica
                       </button>
@@ -341,11 +334,15 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
       <div class="modal-row">
         <div class="modal-group">
           <label>Nazionalità</label>
-          <input type="text" name="nazionalita" id="edit-nazionalita" placeholder="es. Italiana">
+          <select name="nazionalita_id" id="edit-nazionalita">
+            <?= $optNaz ?>
+          </select>
         </div>
         <div class="modal-group">
           <label>Lingua</label>
-          <input type="text" name="lingua" id="edit-lingua" placeholder="es. Italiano">
+          <select name="lingua_id" id="edit-lingua">
+            <?= $optLing ?>
+          </select>
         </div>
       </div>
       <div class="modal-actions">
@@ -395,13 +392,13 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
     btn.classList.add('active');
   }
 
-  function openEditModal(id, nome, cognome, email, nazionalita, lingua) {
-    document.getElementById('edit-user-id').value     = id;
-    document.getElementById('edit-nome').value        = nome;
-    document.getElementById('edit-cognome').value     = cognome;
-    document.getElementById('edit-email').value       = email;
-    document.getElementById('edit-nazionalita').value = nazionalita;
-    document.getElementById('edit-lingua').value      = lingua;
+  function openEditModal(id, nome, cognome, email, nazionalitaId, linguaId) {
+    document.getElementById('edit-user-id').value = id;
+    document.getElementById('edit-nome').value     = nome;
+    document.getElementById('edit-cognome').value  = cognome;
+    document.getElementById('edit-email').value    = email;
+    document.getElementById('edit-nazionalita').value = nazionalitaId;
+    document.getElementById('edit-lingua').value      = linguaId;
     document.getElementById('edit-modal').classList.add('open');
   }
   function closeEditModal() {
@@ -432,7 +429,9 @@ $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOI
     let visibleCount = 0;
 
     rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
+      const text = (row.textContent + ' ' +
+        (row.dataset.naz || '') + ' ' +
+        (row.dataset.lingua || '')).toLowerCase();
       if (text.includes(filter)) {
         row.style.display = '';
         visibleCount++;

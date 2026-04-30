@@ -12,6 +12,7 @@ $me      = currentUser();
 
 // Protezioni
 if ($user_id <= 0) {
+<<<<<<< Updated upstream
     $_SESSION['reset_error'] = '❌ ID utente non valido.';
     header('Location: ../pages/admin/admin.php');
     exit;
@@ -30,6 +31,13 @@ if (!$check->fetch()) {
     $_SESSION['reset_error'] = '❌ Utente non trovato.';
     header('Location: ../pages/admin/admin.php');
     exit;
+=======
+    redirectMsg('../pages/admin/admin.php', '❌ ID utente non valido.', true);
+}
+
+if ($user_id === (int)$me['id']) {
+    redirectMsg('../pages/admin/admin.php', '❌ Non puoi eliminare te stesso.', true);
+>>>>>>> Stashed changes
 }
 
 // Elimina in cascata (messaggi → ticket → viaggi → utente)
@@ -38,6 +46,14 @@ $pdo->prepare("DELETE FROM support_tickets WHERE user_id = :id")->execute(['id' 
 $pdo->prepare("DELETE FROM viaggi WHERE user_id = :id")->execute(['id' => $user_id]);
 $pdo->prepare("DELETE FROM users WHERE id = :id")->execute(['id' => $user_id]);
 
+<<<<<<< Updated upstream
 $_SESSION['reset_msg'] = "✅ Utente #$user_id eliminato con successo.";
 header('Location: ../pages/admin/admin.php');
 exit;
+=======
+if ($stmt->rowCount() > 0) {
+    redirectMsg('../pages/admin/admin.php', "✅ Utente #$user_id eliminato con successo.");
+} else {
+    redirectMsg('../pages/admin/admin.php', '❌ Utente non trovato.', true);
+}
+>>>>>>> Stashed changes

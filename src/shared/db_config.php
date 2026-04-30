@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 define('DB_HOST',    'localhost');
-define('DB_NAME',    'vacanza_match');
+define('DB_NAME',    'vacanza_match_2');
 define('DB_USER',    'root');        // utente di default XAMPP/MAMP
 define('DB_PASS',    '');            // password vuota su XAMPP; su MAMP è 'root'
 define('DB_CHARSET', 'utf8mb4');
@@ -20,3 +21,4 @@ function getPDO(): PDO {
     }
     return $pdo;
 }
+?>

@@ -10,9 +10,13 @@ $pdo     = getPDO();
 $user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
 
 if ($user_id <= 0) {
+<<<<<<< Updated upstream
     $_SESSION['reset_error'] = '❌ ID utente non valido.';
     header('Location: ../pages/admin/admin.php');
     exit;
+=======
+    redirectMsg('../pages/admin/admin.php', '❌ ID utente non valido.', true);
+>>>>>>> Stashed changes
 }
 
 $newPassword  = bin2hex(random_bytes(6));
@@ -22,6 +26,7 @@ $stmt = $pdo->prepare("UPDATE users SET password = :pwd WHERE id = :id");
 $stmt->execute(['pwd' => $passwordHash, 'id' => $user_id]);
 
 if ($stmt->rowCount() === 0) {
+<<<<<<< Updated upstream
     $_SESSION['reset_error'] = '❌ Utente non trovato.';
     header('Location: ../pages/admin/admin.php');
     exit;
@@ -30,3 +35,9 @@ if ($stmt->rowCount() === 0) {
 $_SESSION['reset_msg'] = "✅ Password resettata per l'utente #$user_id. Password temporanea: <strong>$newPassword</strong>";
 header('Location: ../pages/admin/admin.php');
 exit;
+=======
+    redirectMsg('../pages/admin/admin.php', '❌ Utente non trovato.', true);
+}
+
+redirectMsg('../pages/admin/admin.php', "✅ Password resettata per l'utente #$user_id. Password temporanea: $newPassword — Comunicala all'utente e invitalo a cambiarla subito.");
+>>>>>>> Stashed changes

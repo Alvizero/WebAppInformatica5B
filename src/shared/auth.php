@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 function startSession(): void {
@@ -63,23 +64,26 @@ function requireAdminLevel(int $maxLevel): void {
 function currentUser(): array {
     startSession();
     return [
-        'id'          => $_SESSION['user_id']      ?? null,
-        'nome'        => $_SESSION['user_nome']     ?? '',
-        'cognome'     => $_SESSION['user_cognome']  ?? '',
-        'lingua'      => $_SESSION['user_lingua']   ?? '',
-        'nazionalita' => $_SESSION['user_naz']      ?? '',
-        'livello_utente' => $_SESSION['livello_utente']   ?? 255,
+        'id'             => $_SESSION['user_id']        ?? null,
+        'nome'           => $_SESSION['user_nome']       ?? '',
+        'cognome'        => $_SESSION['user_cognome']    ?? '',
+        'lingua_id'      => $_SESSION['user_lingua_id']  ?? 0,
+        'nazionalita_id' => $_SESSION['user_naz_id']     ?? 0,
+        'livello_utente' => $_SESSION['livello_utente']  ?? 255,
     ];
 }
 
 function loginUser(array $user): void {
     startSession();
     session_regenerate_id(true);
-    $_SESSION['user_id']      = $user['id'];
-    $_SESSION['user_nome']    = $user['nome'];
-    $_SESSION['user_cognome'] = $user['cognome'];
-    $_SESSION['user_lingua']  = $user['lingua'];
-    $_SESSION['user_naz']     = $user['nazionalita'];
+    $_SESSION['user_id']        = $user['id'];
+    $_SESSION['user_nome']      = $user['nome'];
+    $_SESSION['user_cognome']   = $user['cognome'];
+    $_SESSION['user_lingua_id'] = (int)$user['lingua_id'];
+    $_SESSION['user_naz_id']    = (int)$user['nazionalita_id'];
+    // Nomi testuali per la navbar (non richiedono helper)
+    $_SESSION['user_naz_nome']   = $user['nazionalita_nome'] ?? '';
+    $_SESSION['user_lingua_nome']= $user['lingua_nome'] ?? '';
     $_SESSION['livello_utente']  = (int)$user['livello_utente'];
 }
 
@@ -88,3 +92,42 @@ function logoutUser(): void {
     session_unset();
     session_destroy();
 }
+<<<<<<< Updated upstream
+=======
+
+/**
+ * Gestione Messaggi Flash e Redirect
+ */
+function setFlash(string $key, string $msg): void {
+    startSession();
+    $_SESSION[$key] = $msg;
+}
+
+function getFlash(string $key): ?string {
+    startSession();
+    if (empty($_SESSION[$key])) return null;
+    $msg = $_SESSION[$key];
+    unset($_SESSION[$key]);
+    return $msg;
+}
+
+function redirect(string $url, ?string $success = null, ?string $error = null): void {
+    if ($success || $error) {
+        $sep = str_contains($url, '?') ? '&' : '?';
+        if ($success) $url .= $sep . 'success_msg=' . urlencode($success);
+        if ($error)   $url .= ($success ? '&' : $sep) . 'error_msg=' . urlencode($error);
+    }
+    header("Location: $url");
+    exit;
+}
+
+/**
+ * Redirect con flash unificato.
+ * Usa sempre i query-param success_msg / error_msg (letti da app.js via toast).
+ */
+function redirectMsg(string $url, string $msg, bool $isError = false): void {
+    redirect($url, $isError ? null : $msg, $isError ? $msg : null);
+}
+
+?>
+>>>>>>> Stashed changes

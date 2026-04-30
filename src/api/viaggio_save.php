@@ -15,6 +15,7 @@ $inizio = $_POST['data_inizio'] ?? '';
 $fine   = $_POST['data_fine']   ?? '';
 
 if (!$dest || $lat === false || $lng === false || !$inizio || !$fine || $fine < $inizio) {
+<<<<<<< Updated upstream
     header('Location: ./../pages/dashboard/dashboard.php?error_msg=' . urlencode('Dati non validi o date non corrette.'));
     exit;
 }
@@ -31,3 +32,20 @@ if ($id) {
 
 header('Location: ./../pages/dashboard/dashboard.php?success_msg=' . urlencode($msg));
 exit;
+=======
+    redirectMsg('../pages/dashboard/dashboard.php', '❌ Dati non validi o date non corrette.', true);
+}
+
+$params = ['uid'=>$user['id'], 'dest'=>$dest, 'lat'=>$lat, 'lng'=>$lng, 'inizio'=>$inizio, 'fine'=>$fine];
+
+if ($id > 0) {
+    $params['id'] = $id;
+    getPDO()->prepare("UPDATE viaggi SET destinazione=:dest, latitudine=:lat, longitudine=:lng, data_inizio=:inizio, data_fine=:fine WHERE id=:id AND user_id=:uid")
+        ->execute($params);
+    redirectMsg('../pages/dashboard/dashboard.php', '✅ Viaggio modificato con successo.');
+} else {
+    getPDO()->prepare("INSERT INTO viaggi (user_id, destinazione, latitudine, longitudine, data_inizio, data_fine) VALUES (:uid, :dest, :lat, :lng, :inizio, :fine)")
+        ->execute($params);
+    redirectMsg('../pages/dashboard/dashboard.php', '✅ Nuovo viaggio creato con successo.');
+}
+>>>>>>> Stashed changes

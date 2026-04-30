@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../shared/auth.php';
+require_once __DIR__ . '/../../shared/db_config.php';
+require_once __DIR__ . '/../../shared/lookup_helper.php';
 requireLogin();
 ?>
 <!DOCTYPE html>
@@ -29,12 +31,22 @@ requireLogin();
 
       <div class="filter-section">
         <label class="filter-label">Lingua parlata <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
-        <input type="text" id="f-lingua" placeholder="es. Italiano, English…">
+        <select id="f-lingua">
+          <option value="">— Tutte le lingue —</option>
+          <?php foreach (getLingue() as $id => $nome): ?>
+            <option value="<?= $id ?>"><?= ucfirst(htmlspecialchars($nome)) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
 
       <div class="filter-section">
         <label class="filter-label">Nazionalità <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
-        <input type="text" id="f-nazionalita" placeholder="es. Italiana, Francese…">
+        <select id="f-nazionalita">
+          <option value="">— Tutte le nazionalità —</option>
+          <?php foreach (getNazionalita() as $id => $nome): ?>
+            <option value="<?= $id ?>"><?= ucfirst(htmlspecialchars($nome)) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
 
       <div class="filter-section">

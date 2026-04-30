@@ -1,9 +1,3 @@
-/* ============================================================
-   VACANZAMATCH — DESIGN SYSTEM v3
-   Aesthetic: Modern travel, vibrant & clean
-   Fonts: Plus Jakarta Sans (display) + Inter (body)
-   ============================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
 /* ── Reset ── */
@@ -234,9 +228,9 @@ small { font-size: .8rem; }
 .delay-4 { animation-delay: .20s; }
 .delay-5 { animation-delay: .25s; }
 
-/* ============================================================
+/* 
    NAVBAR
-   ============================================================ */
+    */
 header {
   position: sticky;
   top: 0;
@@ -575,9 +569,9 @@ nav a.nav-active {
   .nav-profile-menu.open { display: block; }
 }
 
-/* ============================================================
+/* 
    CARDS
-   ============================================================ */
+    */
 .card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -588,9 +582,9 @@ nav a.nav-active {
 }
 .card:hover { box-shadow: var(--shadow-lg); }
 
-/* ============================================================
+/* 
    FORM ELEMENTS
-   ============================================================ */
+    */
 .form-group { margin-bottom: 1.1rem; }
 
 .form-group label,
@@ -649,9 +643,9 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 .form-grid .full { grid-column: 1 / -1; }
 @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
 
-/* ============================================================
+/* 
    BUTTONS
-   ============================================================ */
+    */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -772,9 +766,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 }
 .btn-delete:hover { background: #fee2e2; }
 
-/* ============================================================
-   ALERTS
-   ============================================================ */
+/* ALERTS*/
 .alert {
   display: flex;
   align-items: flex-start;
@@ -791,9 +783,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 .alert-info    { background: var(--info-bg); color: var(--brand-dark); border: 1px solid rgba(37,99,235,.2); }
 .alert-warning { background: var(--warning-bg); color: #92400e; border: 1px solid #fde68a; }
 
-/* ============================================================
-   BADGES
-   ============================================================ */
+/* BADGES */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -816,9 +806,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 .badge-level-2  { background: #ede9fe; color: #5b21b6; }
 .badge-level-255{ background: var(--surface-3); color: var(--muted); }
 
-/* ============================================================
-   SEARCH BAR
-   ============================================================ */
+/* SEARCH BAR */
 .search-bar {
   display: flex;
   gap: .4rem;

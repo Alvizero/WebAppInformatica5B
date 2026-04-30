@@ -2,12 +2,13 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
+require_once __DIR__ . '/../../shared/lookup_helper.php';
 
 requireLogin();
 $user = currentUser();
 $pdo  = getPDO();
 
-$stmt = $pdo->prepare('SELECT nome, cognome, email, nazionalita, lingua FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT nome, cognome, email, nazionalita_id, lingua_id FROM users WHERE id = ?');
 $stmt->execute([$user['id']]);
 $dbUser = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$dbUser) die('Errore: utente non trovato.');
@@ -16,17 +17,17 @@ $errors  = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome        = trim($_POST['nome']        ?? '');
-    $cognome     = trim($_POST['cognome']     ?? '');
-    $email       = trim($_POST['email']       ?? '');
-    $nazionalita = trim($_POST['nazionalita'] ?? '');
-    $lingua      = trim($_POST['lingua']      ?? '');
+    $nome    = trim($_POST['nome']    ?? '');
+    $cognome = trim($_POST['cognome'] ?? '');
+    $email   = trim($_POST['email']   ?? '');
+    $naz_id  = (int)($_POST['nazionalita_id'] ?? 0);
+    $ling_id = (int)($_POST['lingua_id']      ?? 0);
 
     if (empty($nome))                               $errors[] = 'Il nome è obbligatorio.';
     if (empty($cognome))                            $errors[] = 'Il cognome è obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Inserisci un indirizzo email valido.';
-    if (empty($nazionalita))                        $errors[] = 'La nazionalità è obbligatoria.';
-    if (empty($lingua))                             $errors[] = 'La lingua principale è obbligatoria.';
+    if ($naz_id <= 0 || !getNazionalitaNome($naz_id)) $errors[] = 'La nazionalità è obbligatoria.';
+    if ($ling_id <= 0 || !getLinguaNome($ling_id))    $errors[] = 'La lingua principale è obbligatoria.';
 
     if (empty($errors)) {
         $chk = $pdo->prepare('SELECT id FROM users WHERE email = ? AND id <> ?');
@@ -34,13 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) {
             $errors[] = 'Questo indirizzo email è già in uso da un altro account.';
         } else {
-            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita=?, lingua=? WHERE id=?');
-            $upd->execute([$nome, $cognome, $email, $nazionalita, $lingua, $user['id']]);
-            $_SESSION['user_nome']    = $nome;
-            $_SESSION['user_cognome'] = $cognome;
-            $_SESSION['user_naz']     = $nazionalita;
-            $_SESSION['user_lingua']  = $lingua;
-            header('Location: profilo.php?success_msg=' . urlencode('Profilo aggiornato con successo!'));
+            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita_id=?, lingua_id=? WHERE id=?');
+            $upd->execute([$nome, $cognome, $email, $naz_id, $ling_id, $user['id']]);
+            $_SESSION['user_nome']         = $nome;
+            $_SESSION['user_cognome']      = $cognome;
+            $_SESSION['user_naz_id']       = $naz_id;
+            $_SESSION['user_lingua_id']    = $ling_id;
+            $_SESSION['user_naz_nome']     = getNazionalitaNome($naz_id);
+            $_SESSION['user_lingua_nome']  = getLinguaNome($ling_id);
+            header('Location: profilo.php?success_msg=' . urlencode('✅ Profilo aggiornato con successo!'));
             exit;
         }
     }
@@ -132,13 +135,17 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
         <div>
           <div class="input-wrap">
             <label>Nazionalità *</label>
-            <input type="text" name="nazionalita" required value="<?= htmlspecialchars($dbUser['nazionalita'] ?? '') ?>" placeholder="es. Italiana">
+            <select name="nazionalita_id" required>
+              <?= nazionalitaOptions((int)($dbUser['nazionalita_id'] ?? 0)) ?>
+            </select>
           </div>
         </div>
         <div>
           <div class="input-wrap">
             <label>Lingua principale *</label>
-            <input type="text" name="lingua" required value="<?= htmlspecialchars($dbUser['lingua'] ?? '') ?>" placeholder="es. Italiano">
+            <select name="lingua_id" required>
+              <?= lingueOptions((int)($dbUser['lingua_id'] ?? 0)) ?>
+            </select>
           </div>
         </div>
         <div class="full">
