@@ -14,13 +14,25 @@ function isLoggedIn(): bool {
 // Qualsiasi livello admin (< 255)
 function isAdmin(): bool {
     startSession();
-    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] < 255;
+    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] < 255 && $_SESSION['livello_utente'] !== 3;
 }
 
 // Livello specifico o superiore (numero più basso = più potere)
 function isAdminLevel(int $maxLevel): bool {
     startSession();
     return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] <= $maxLevel;
+}
+
+// Verifica se l'utente è un'agenzia
+function isAgency(): bool {
+    startSession();
+    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] === 3;
+}
+
+// Verifica se è super admin (livello 0)
+function isSuperAdmin(): bool {
+    startSession();
+    return isset($_SESSION['livello_utente']) && $_SESSION['livello_utente'] === 0;
 }
 
 function getAdminLevel(): int {
@@ -33,6 +45,7 @@ function adminLevelLabel(int $level): string {
         $level === 0  => '⭐ Super Admin',
         $level === 1  => '🛡 Admin',
         $level === 2  => '🔧 Moderatore',
+        $level === 3  => '🏢 Agenzia',
         default       => '👤 Utente',
     };
 }
@@ -61,29 +74,34 @@ function requireAdminLevel(int $maxLevel): void {
     }
 }
 
+function requireAgency(): void {
+    requireLogin();
+    if (!isAgency()) {
+        header('Location: /informatica/mene2/src/pages/dashboard/dashboard.php');
+        exit;
+    }
+}
+
 function currentUser(): array {
     startSession();
     return [
-        'id'             => $_SESSION['user_id']        ?? null,
-        'nome'           => $_SESSION['user_nome']       ?? '',
-        'cognome'        => $_SESSION['user_cognome']    ?? '',
-        'lingua_id'      => $_SESSION['user_lingua_id']  ?? 0,
-        'nazionalita_id' => $_SESSION['user_naz_id']     ?? 0,
-        'livello_utente' => $_SESSION['livello_utente']  ?? 255,
+        'id'          => $_SESSION['user_id']      ?? null,
+        'nome'        => $_SESSION['user_nome']     ?? '',
+        'cognome'     => $_SESSION['user_cognome']  ?? '',
+        'lingua'      => $_SESSION['user_lingua']   ?? '',
+        'nazionalita' => $_SESSION['user_naz']      ?? '',
+        'livello_utente' => $_SESSION['livello_utente']   ?? 255,
     ];
 }
 
 function loginUser(array $user): void {
     startSession();
     session_regenerate_id(true);
-    $_SESSION['user_id']        = $user['id'];
-    $_SESSION['user_nome']      = $user['nome'];
-    $_SESSION['user_cognome']   = $user['cognome'];
-    $_SESSION['user_lingua_id'] = (int)$user['lingua_id'];
-    $_SESSION['user_naz_id']    = (int)$user['nazionalita_id'];
-    // Nomi testuali per la navbar (non richiedono helper)
-    $_SESSION['user_naz_nome']   = $user['nazionalita_nome'] ?? '';
-    $_SESSION['user_lingua_nome']= $user['lingua_nome'] ?? '';
+    $_SESSION['user_id']      = $user['id'];
+    $_SESSION['user_nome']    = $user['nome'];
+    $_SESSION['user_cognome'] = $user['cognome'];
+    $_SESSION['user_lingua']  = $user['lingua'];
+    $_SESSION['user_naz']     = $user['nazionalita'];
     $_SESSION['livello_utente']  = (int)$user['livello_utente'];
 }
 
@@ -92,8 +110,6 @@ function logoutUser(): void {
     session_unset();
     session_destroy();
 }
-<<<<<<< Updated upstream
-=======
 
 /**
  * Gestione Messaggi Flash e Redirect
@@ -120,14 +136,4 @@ function redirect(string $url, ?string $success = null, ?string $error = null): 
     header("Location: $url");
     exit;
 }
-
-/**
- * Redirect con flash unificato.
- * Usa sempre i query-param success_msg / error_msg (letti da app.js via toast).
- */
-function redirectMsg(string $url, string $msg, bool $isError = false): void {
-    redirect($url, $isError ? null : $msg, $isError ? $msg : null);
-}
-
 ?>
->>>>>>> Stashed changes

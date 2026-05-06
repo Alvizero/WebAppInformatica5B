@@ -18,14 +18,22 @@ startSession();
   </button>
 
   <nav id="main-nav">
-    <a href="./../map_view/map_view.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'map_view') !== false ? 'nav-active' : '' ?>">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Cerca compagni
-    </a>
-    <a href="./../dashboard/dashboard.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'dashboard') !== false ? 'nav-active' : '' ?>">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>I miei viaggi
-    </a>
-
-    <?php if (isLoggedIn() && isAdmin()): ?>
+    <?php if (!isAgency()): ?>
+      <a href="./../map_view/map_view.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'map_view') !== false ? 'nav-active' : '' ?>">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Cerca compagni
+      </a>
+      <a href="./../dashboard/dashboard.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'dashboard') !== false ? 'nav-active' : '' ?>">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>I miei viaggi
+      </a>
+      <a href="./../chat/conversations.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'chat') !== false ? 'nav-active' : '' ?>">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messaggi
+      </a>
+    <?php endif; ?>
+    <?php if (isLoggedIn() && isAgency()): ?>
+      <a href="./../agency/agency.php" class="btn-nav-admin">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Agenzia
+      </a>
+    <?php elseif (isLoggedIn() && isAdmin()): ?>
       <a href="./../admin/admin.php" class="btn-nav-admin">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Admin
       </a>
@@ -45,7 +53,7 @@ startSession();
             <div class="nav-avatar-lg"><?= strtoupper(mb_substr($u['nome'], 0, 1)) ?></div>
             <div>
               <div class="nav-profile-full"><?= htmlspecialchars($u['nome'] . ' ' . $u['cognome']) ?></div>
-              <div class="nav-profile-sub"><?= htmlspecialchars(ucfirst($_SESSION['user_naz_nome'] ?? '')) ?> · <?= htmlspecialchars(ucfirst($_SESSION['user_lingua_nome'] ?? '')) ?></div>
+              <div class="nav-profile-sub"><?= htmlspecialchars($u['nazionalita']) ?> · <?= htmlspecialchars($u['lingua']) ?></div>
             </div>
           </div>
 

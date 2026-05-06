@@ -29,11 +29,17 @@ startSession();
         Scopri persone della tua stessa nazionalità in vacanza nello stesso posto e nello stesso periodo. Il viaggio è più bello in buona compagnia.
       </p>
       <div class="hero-actions">
-        <a href="./../map_view/map_view.php" class="btn btn-primary btn-lg">
-          Cerca sulla mappa
-        </a>
+        <?php if (!isLoggedIn() || !isAgency()): ?>
+          <a href="./../map_view/map_view.php" class="btn btn-primary btn-lg">
+            Cerca sulla mappa
+          </a>
+        <?php endif; ?>
         <?php if (isLoggedIn()): ?>
-          <a href="./../dashboard/dashboard.php" class="btn btn-ghost btn-lg">I miei viaggi</a>
+          <?php if (isAgency()): ?>
+            <a href="./../agency/agency.php" class="btn btn-primary btn-lg">Pannello Agenzia</a>
+          <?php else: ?>
+            <a href="./../dashboard/dashboard.php" class="btn btn-ghost btn-lg">I miei viaggi</a>
+          <?php endif; ?>
         <?php else: ?>
           <a href="./../register/register.php" class="btn btn-ghost btn-lg">Registrati gratis</a>
         <?php endif; ?>

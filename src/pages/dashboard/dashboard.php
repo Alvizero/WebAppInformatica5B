@@ -4,6 +4,11 @@ require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
 requireLogin();
 
+if (isAgency()) {
+    header('Location: ../agency/agency.php');
+    exit;
+}
+
 $user = currentUser();
 $pdo  = getPDO();
 

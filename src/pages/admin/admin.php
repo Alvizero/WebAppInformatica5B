@@ -5,40 +5,23 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../shared/auth.php';
 require_once __DIR__ . '/../../shared/db_config.php';
-require_once __DIR__ . '/../../shared/lookup_helper.php';
 requireAdmin();
-
-if (session_status() === PHP_SESSION_NONE) session_start();
 
 $me  = currentUser();
 $pdo = getPDO();
 
-<<<<<<< Updated upstream
-$resetMsg = '';
-if (!empty($_SESSION['reset_msg'])) {
-    $resetMsg = $_SESSION['reset_msg'];
-    unset($_SESSION['reset_msg']);
-}
-$errorMsg = '';
-if (!empty($_SESSION['reset_error'])) {
-    $errorMsg = $_SESSION['reset_error'];
-    unset($_SESSION['reset_error']);
-}
+$resetMsg = getFlash('reset_msg');
+$errorMsg = getFlash('reset_error');
 
-=======
->>>>>>> Stashed changes
 $numUtenti  = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 $numViaggi  = $pdo->query("SELECT COUNT(*) FROM viaggi")->fetchColumn();
 $numTickets = $pdo->query("SELECT COUNT(*) FROM support_tickets")->fetchColumn();
 $numAperti  = $pdo->query("SELECT COUNT(*) FROM support_tickets WHERE stato='aperto'")->fetchColumn();
 
-$utenti  = $pdo->query("SELECT u.id, u.nome, u.cognome, u.email, u.livello_utente, u.nazionalita_id, u.lingua_id, u.created_at, n.nome AS nazionalita_nome, l.nome AS lingua_nome FROM users u LEFT JOIN nazionalita n ON n.id = u.nazionalita_id LEFT JOIN lingue l ON l.id = u.lingua_id ORDER BY u.livello_utente ASC, u.created_at DESC")->fetchAll();
+$utenti  = $pdo->query("SELECT id, nome, cognome, email, livello_utente, nazionalita, lingua, created_at FROM users ORDER BY livello_utente ASC, created_at DESC")->fetchAll();
 $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC")->fetchAll();
-$tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOIN users u ON u.id = t.user_id ORDER BY t.created_at DESC")->fetchAll();
-
-// Prepara le option dei select per il modal
-$optNaz  = nazionalitaOptions();
-$optLing = lingueOptions();
+  $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOIN users u ON u.id = t.user_id ORDER BY t.created_at DESC")->fetchAll();
+  $pacchetti = $pdo->query("SELECT * FROM pacchetti ORDER BY created_at DESC")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -50,11 +33,28 @@ $optLing = lingueOptions();
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="./../../shared/base.css">
   <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <?php include __DIR__ . '/../../shared/navbar.php'; ?>
 
 <div class="container admin-page">
+
+  <?php if ($resetMsg): ?>
+    <div class="alert alert-success" style="margin-bottom:1.25rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <?= htmlspecialchars($resetMsg) ?>
+      <br><small style="opacity:.8;margin-top:.3rem;display:block;">Comunica la password temporanea all'utente e invitalo a cambiarla subito.</small>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($errorMsg): ?>
+    <div class="alert alert-error" style="margin-bottom:1.25rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <?= htmlspecialchars($errorMsg) ?>
+    </div>
+  <?php endif; ?>
 
   <!-- Header -->
   <div class="admin-page-header">
@@ -105,6 +105,9 @@ $optLing = lingueOptions();
       <button class="admin-nav-item" onclick="showSection('tickets', this)">
         <span class="nav-icon">💬</span> Supporto
       </button>
+      <button class="admin-nav-item" onclick="showSection('pacchetti', this)">
+        <span class="nav-icon">🎁</span> Pacchetti
+      </button>
     </aside>
 
     <main class="admin-content">
@@ -136,7 +139,7 @@ $optLing = lingueOptions();
             </thead>
             <tbody>
               <?php foreach ($utenti as $u): ?>
-                <tr data-naz="<?= htmlspecialchars($u['nazionalita_nome'] ?? '') ?>" data-lingua="<?= htmlspecialchars($u['lingua_nome'] ?? '') ?>">
+                <tr>
                   <td><?= $u['id'] ?></td>
                   <td><strong><?= htmlspecialchars($u['nome'] . ' ' . $u['cognome']) ?></strong></td>
                   <td><?= htmlspecialchars($u['email']) ?></td>
@@ -145,7 +148,7 @@ $optLing = lingueOptions();
                   <td>
                     <div class="row-actions">
                       <button type="button" class="btn-edit" title="Modifica dati"
-                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>',<?= (int)$u['nazionalita_id'] ?>,<?= (int)$u['lingua_id'] ?>)">
+                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>','<?= htmlspecialchars(addslashes($u['nazionalita'] ?? '')) ?>','<?= htmlspecialchars(addslashes($u['lingua'] ?? '')) ?>')">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Modifica
                       </button>
@@ -301,9 +304,59 @@ $optLing = lingueOptions();
         </div>
       </section>
 
+      <!-- SEZIONE PACCHETTI -->
+      <section class="admin-section" id="section-pacchetti">
+        <div class="admin-section-header">
+          <h2>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linecap="round"><path d="M20 12V8H4v4M2 6h20v2H2zM4 12h16v8H4zM12 12v8M8 12v8M16 12v8"/></svg>
+            Gestione Pacchetti Viaggio
+          </h2>
+
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Immagine</th>
+                <th>Titolo</th>
+                <th>Località</th>
+                <th>Prezzo</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($pacchetti as $p): ?>
+                <tr>
+	                  <td>
+	                    <?php if (!empty($p['immagine'])): ?>
+	                      <img src="../../<?= htmlspecialchars($p['immagine']) ?>" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">
+	                    <?php else: ?>
+	                      <div style="width:40px;height:40px;background:var(--surface);border-radius:4px;"></div>
+	                    <?php endif; ?>
+	                  </td>
+                  <td><strong><?= htmlspecialchars($p['titolo']) ?></strong></td>
+                  <td><?= htmlspecialchars($p['localita']) ?></td>
+                  <td>€<?= number_format((float)$p['prezzo'], 2) ?></td>
+                  <td>
+                    <div class="row-actions">
+                      <form method="POST" action="../../api/admin_pacchetti_delete.php" onsubmit="return confirm('Eliminare pacchetto?')" style="margin:0;">
+                        <input type="hidden" name="id" value="<?= $p['id'] ?>">
+                        <button type="submit" class="btn-delete">Elimina</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     </main>
   </div>
 </div>
+
+
 
 <!-- MODAL MODIFICA DATI -->
 <div class="modal-overlay" id="edit-modal">
@@ -334,15 +387,11 @@ $optLing = lingueOptions();
       <div class="modal-row">
         <div class="modal-group">
           <label>Nazionalità</label>
-          <select name="nazionalita_id" id="edit-nazionalita">
-            <?= $optNaz ?>
-          </select>
+          <input type="text" name="nazionalita" id="edit-nazionalita" placeholder="es. Italiana">
         </div>
         <div class="modal-group">
           <label>Lingua</label>
-          <select name="lingua_id" id="edit-lingua">
-            <?= $optLing ?>
-          </select>
+          <input type="text" name="lingua" id="edit-lingua" placeholder="es. Italiano">
         </div>
       </div>
       <div class="modal-actions">
@@ -373,7 +422,10 @@ $optLing = lingueOptions();
         <label>Ruolo</label>
         <select name="livello_utente">
           <option value="255">👤 Utente standard</option>
-          <option value="1">⭐ Amministratore</option>
+          <option value="3">🏢 Agenzia</option>
+          <option value="2">🔧 Moderatore</option>
+          <option value="1">🛡 Amministratore</option>
+          <option value="0">⭐ Super Admin</option>
         </select>
       </div>
       <div class="modal-actions">
@@ -392,13 +444,13 @@ $optLing = lingueOptions();
     btn.classList.add('active');
   }
 
-  function openEditModal(id, nome, cognome, email, nazionalitaId, linguaId) {
-    document.getElementById('edit-user-id').value = id;
-    document.getElementById('edit-nome').value     = nome;
-    document.getElementById('edit-cognome').value  = cognome;
-    document.getElementById('edit-email').value    = email;
-    document.getElementById('edit-nazionalita').value = nazionalitaId;
-    document.getElementById('edit-lingua').value      = linguaId;
+  function openEditModal(id, nome, cognome, email, nazionalita, lingua) {
+    document.getElementById('edit-user-id').value     = id;
+    document.getElementById('edit-nome').value        = nome;
+    document.getElementById('edit-cognome').value     = cognome;
+    document.getElementById('edit-email').value       = email;
+    document.getElementById('edit-nazionalita').value = nazionalita;
+    document.getElementById('edit-lingua').value      = lingua;
     document.getElementById('edit-modal').classList.add('open');
   }
   function closeEditModal() {
@@ -421,6 +473,112 @@ $optLing = lingueOptions();
     if (e.target === this) closeRoleModal();
   });
 
+  function openPkgModal(pkg = null) {
+    if (pkg) {
+      document.getElementById('pkg-id').value = pkg.id;
+      document.getElementById('pkg-titolo').value = pkg.titolo;
+      document.getElementById('pkg-localita').value = pkg.localita;
+      document.getElementById('pkg-prezzo').value = pkg.prezzo;
+      document.getElementById('pkg-descrizione').value = pkg.descrizione;
+      document.getElementById('pkg-link').value = pkg.link_esterno || '';
+      document.getElementById('pkg-modal-title').textContent = 'Modifica Pacchetto';
+    } else {
+      document.getElementById('pkg-id').value = '';
+      document.getElementById('pkg-titolo').value = '';
+      document.getElementById('pkg-localita').value = '';
+      document.getElementById('pkg-prezzo').value = '';
+      document.getElementById('pkg-descrizione').value = '';
+      document.getElementById('pkg-link').value = '';
+      document.getElementById('pkg-modal-title').textContent = 'Nuovo Pacchetto';
+    }
+    document.getElementById('pkg-modal').classList.add('open');
+  }
+  function closePkgModal() {
+    document.getElementById('pkg-modal').classList.remove('open');
+  }
+  document.getElementById('pkg-modal').addEventListener('click', function(e) {
+    if (e.target === this) closePkgModal();
+  });
+
+  // Mappa per i pacchetti
+  let pkgMap = null;
+  let pkgMarker = null;
+
+  function initPkgMap() {
+    if (pkgMap) return;
+    pkgMap = L.map('pkg-map-pick').setView([41.9, 12.5], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(pkgMap);
+    
+    pkgMap.on('click', async function(e) {
+      const { lat, lng } = e.latlng;
+      try {
+        const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await res.json();
+        setPkgMarker(lat, lng, data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+      } catch { setPkgMarker(lat, lng, `${lat.toFixed(5)}, ${lng.toFixed(5)}`); }
+    });
+  }
+
+  function setPkgMarker(lat, lng, label) {
+    if (pkgMarker) pkgMap.removeLayer(pkgMarker);
+    pkgMarker = L.marker([lat, lng]).addTo(pkgMap);
+    document.getElementById('pkg-lat').value = lat;
+    document.getElementById('pkg-lng').value = lng;
+    document.getElementById('pkg-localita').value = label;
+    document.getElementById('pkg-coord-text').textContent = label.substring(0, 70) + '...';
+    document.getElementById('pkg-coord-display').style.display = 'flex';
+  }
+
+  async function pkgGeocodeSearch() {
+    const query = document.getElementById('pkg-geocode-input').value.trim();
+    if (!query) return;
+    try {
+      const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
+      const data = await res.json();
+      if (!data.length) { alert('Nessun risultato trovato.'); return; }
+      pkgMap.setView([+data[0].lat, +data[0].lon], 10);
+      setPkgMarker(+data[0].lat, +data[0].lon, data[0].display_name);
+    } catch { alert('Errore durante la ricerca.'); }
+  }
+
+  function openPkgModal(pkg = null) {
+    initPkgMap();
+    if (pkg) {
+      document.getElementById('pkg-id').value = pkg.id;
+      document.getElementById('pkg-titolo').value = pkg.titolo;
+      document.getElementById('pkg-prezzo').value = pkg.prezzo;
+      document.getElementById('pkg-agenzia-nome').value = pkg.nome_agenzia;
+      document.getElementById('pkg-agenzia-email').value = pkg.email_agenzia;
+      document.getElementById('pkg-descrizione').value = pkg.descrizione;
+      document.getElementById('pkg-link').value = pkg.link_esterno || '';
+      document.getElementById('pkg-localita').value = pkg.localita;
+      document.getElementById('pkg-lat').value = pkg.latitudine;
+      document.getElementById('pkg-lng').value = pkg.longitudine;
+      
+      if (pkg.latitudine && pkg.longitudine) {
+        pkgMap.setView([pkg.latitudine, pkg.longitudine], 10);
+        setPkgMarker(pkg.latitudine, pkg.longitudine, pkg.localita);
+      }
+      document.getElementById('pkg-modal-title').textContent = 'Modifica Pacchetto';
+    } else {
+      document.getElementById('pkg-id').value = '';
+      document.getElementById('pkg-titolo').value = '';
+      document.getElementById('pkg-prezzo').value = '';
+      document.getElementById('pkg-agenzia-nome').value = '';
+      document.getElementById('pkg-agenzia-email').value = '';
+      document.getElementById('pkg-descrizione').value = '';
+      document.getElementById('pkg-link').value = '';
+      document.getElementById('pkg-localita').value = '';
+      document.getElementById('pkg-lat').value = '';
+      document.getElementById('pkg-lng').value = '';
+      if (pkgMarker) pkgMap.removeLayer(pkgMarker);
+      document.getElementById('pkg-coord-display').style.display = 'none';
+      document.getElementById('pkg-modal-title').textContent = 'Nuovo Pacchetto';
+    }
+    document.getElementById('pkg-modal').classList.add('open');
+    setTimeout(() => pkgMap.invalidateSize(), 200);
+  }
+
   function filterTable(section) {
     const searchInput = document.getElementById('search-' + section);
     const filter = searchInput.value.toLowerCase();
@@ -429,9 +587,7 @@ $optLing = lingueOptions();
     let visibleCount = 0;
 
     rows.forEach(row => {
-      const text = (row.textContent + ' ' +
-        (row.dataset.naz || '') + ' ' +
-        (row.dataset.lingua || '')).toLowerCase();
+      const text = row.textContent.toLowerCase();
       if (text.includes(filter)) {
         row.style.display = '';
         visibleCount++;

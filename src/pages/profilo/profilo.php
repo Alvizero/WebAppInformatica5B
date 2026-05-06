@@ -2,13 +2,12 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
-require_once __DIR__ . '/../../shared/lookup_helper.php';
 
 requireLogin();
 $user = currentUser();
 $pdo  = getPDO();
 
-$stmt = $pdo->prepare('SELECT nome, cognome, email, nazionalita_id, lingua_id FROM users WHERE id = ?');
+$stmt = $pdo->prepare('SELECT nome, cognome, email, nazionalita, lingua FROM users WHERE id = ?');
 $stmt->execute([$user['id']]);
 $dbUser = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$dbUser) die('Errore: utente non trovato.');
@@ -17,17 +16,17 @@ $errors  = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome    = trim($_POST['nome']    ?? '');
-    $cognome = trim($_POST['cognome'] ?? '');
-    $email   = trim($_POST['email']   ?? '');
-    $naz_id  = (int)($_POST['nazionalita_id'] ?? 0);
-    $ling_id = (int)($_POST['lingua_id']      ?? 0);
+    $nome        = trim($_POST['nome']        ?? '');
+    $cognome     = trim($_POST['cognome']     ?? '');
+    $email       = trim($_POST['email']       ?? '');
+    $nazionalita = trim($_POST['nazionalita'] ?? '');
+    $lingua      = trim($_POST['lingua']      ?? '');
 
     if (empty($nome))                               $errors[] = 'Il nome è obbligatorio.';
     if (empty($cognome))                            $errors[] = 'Il cognome è obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Inserisci un indirizzo email valido.';
-    if ($naz_id <= 0 || !getNazionalitaNome($naz_id)) $errors[] = 'La nazionalità è obbligatoria.';
-    if ($ling_id <= 0 || !getLinguaNome($ling_id))    $errors[] = 'La lingua principale è obbligatoria.';
+    if (empty($nazionalita))                        $errors[] = 'La nazionalità è obbligatoria.';
+    if (empty($lingua))                             $errors[] = 'La lingua principale è obbligatoria.';
 
     if (empty($errors)) {
         $chk = $pdo->prepare('SELECT id FROM users WHERE email = ? AND id <> ?');
@@ -35,15 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) {
             $errors[] = 'Questo indirizzo email è già in uso da un altro account.';
         } else {
-            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita_id=?, lingua_id=? WHERE id=?');
-            $upd->execute([$nome, $cognome, $email, $naz_id, $ling_id, $user['id']]);
-            $_SESSION['user_nome']         = $nome;
-            $_SESSION['user_cognome']      = $cognome;
-            $_SESSION['user_naz_id']       = $naz_id;
-            $_SESSION['user_lingua_id']    = $ling_id;
-            $_SESSION['user_naz_nome']     = getNazionalitaNome($naz_id);
-            $_SESSION['user_lingua_nome']  = getLinguaNome($ling_id);
-            header('Location: profilo.php?success_msg=' . urlencode('✅ Profilo aggiornato con successo!'));
+            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita=?, lingua=? WHERE id=?');
+            $upd->execute([$nome, $cognome, $email, $nazionalita, $lingua, $user['id']]);
+            $_SESSION['user_nome']    = $nome;
+            $_SESSION['user_cognome'] = $cognome;
+            $_SESSION['user_naz']     = $nazionalita;
+            $_SESSION['user_lingua']  = $lingua;
+            header('Location: profilo.php?success_msg=' . urlencode('Profilo aggiornato con successo!'));
             exit;
         }
     }
@@ -68,29 +65,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
 <div class="container settings-page">
   <div class="settings-layout">
 
-    <!-- Sidebar -->
-    <div class="settings-sidebar">
-      <div class="settings-sidebar-profile">
-        <div class="avatar-circle"><?= htmlspecialchars($initials) ?></div>
-        <div class="user-name"><?= htmlspecialchars($dbUser['nome'] . ' ' . $dbUser['cognome']) ?></div>
-        <div class="user-email"><?= htmlspecialchars($dbUser['email']) ?></div>
-      </div>
-      <nav class="settings-nav">
-        <a href="profilo.php" class="active">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-          Profilo
-        </a>
-        <a href="./../impostazioni/impostazioni.php">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Sicurezza
-        </a>
-
-        <a href="./../supporto/supporto.php">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Supporto
-        </a>
-      </nav>
-    </div>
+    <?php $activePage = 'profilo'; include __DIR__ . '/../../shared/settings_sidebar.php'; ?>
 
     <!-- Form -->
     <div class="settings-card">
@@ -135,17 +110,13 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
         <div>
           <div class="input-wrap">
             <label>Nazionalità *</label>
-            <select name="nazionalita_id" required>
-              <?= nazionalitaOptions((int)($dbUser['nazionalita_id'] ?? 0)) ?>
-            </select>
+            <input type="text" name="nazionalita" required value="<?= htmlspecialchars($dbUser['nazionalita'] ?? '') ?>" placeholder="es. Italiana">
           </div>
         </div>
         <div>
           <div class="input-wrap">
             <label>Lingua principale *</label>
-            <select name="lingua_id" required>
-              <?= lingueOptions((int)($dbUser['lingua_id'] ?? 0)) ?>
-            </select>
+            <input type="text" name="lingua" required value="<?= htmlspecialchars($dbUser['lingua'] ?? '') ?>" placeholder="es. Italiano">
           </div>
         </div>
         <div class="full">

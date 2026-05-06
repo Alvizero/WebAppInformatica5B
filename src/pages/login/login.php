@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($email && $password) {
     $pdo  = getPDO();
-    $stmt = $pdo->prepare('SELECT u.*, n.nome AS nazionalita_nome, l.nome AS lingua_nome FROM users u LEFT JOIN nazionalita n ON n.id = u.nazionalita_id LEFT JOIN lingue l ON l.id = u.lingua_id WHERE u.email = :email');
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
     if ($user && password_verify($password, $user['password'])) {

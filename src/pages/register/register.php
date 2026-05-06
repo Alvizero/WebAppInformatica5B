@@ -2,7 +2,6 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
-require_once __DIR__ . '/../../shared/lookup_helper.php';
 startSession();
 
 if (isLoggedIn()) {
@@ -14,21 +13,21 @@ $errors  = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome    = trim($_POST['nome']    ?? '');
-    $cognome = trim($_POST['cognome'] ?? '');
-    $email   = trim($_POST['email']   ?? '');
-    $password  = $_POST['password']  ?? '';
-    $password2 = $_POST['password2'] ?? '';
-    $naz_id  = (int)($_POST['nazionalita_id'] ?? 0);
-    $ling_id = (int)($_POST['lingua_id']      ?? 0);
+    $nome        = trim($_POST['nome']        ?? '');
+    $cognome     = trim($_POST['cognome']     ?? '');
+    $email       = trim($_POST['email']       ?? '');
+    $password    = $_POST['password']         ?? '';
+    $password2   = $_POST['password2']        ?? '';
+    $nazionalita = trim($_POST['nazionalita'] ?? '');
+    $lingua      = trim($_POST['lingua']      ?? '');
 
     if (empty($nome))                                       $errors[] = 'Nome obbligatorio.';
     if (empty($cognome))                                    $errors[] = 'Cognome obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))         $errors[] = 'Email non valida.';
     if (strlen($password) < 8)                              $errors[] = 'Password minimo 8 caratteri.';
     if ($password !== $password2)                           $errors[] = 'Le password non coincidono.';
-    if ($naz_id <= 0 || !getNazionalitaNome($naz_id))       $errors[] = 'Nazionalità obbligatoria.';
-    if ($ling_id <= 0 || !getLinguaNome($ling_id))           $errors[] = 'Lingua obbligatoria.';
+    if (empty($nazionalita))                                $errors[] = 'Nazionalità obbligatoria.';
+    if (empty($lingua))                                     $errors[] = 'Lingua obbligatoria.';
 
     if (empty($errors)) {
         $pdo = getPDO();
@@ -39,16 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hash = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $pdo->prepare(
-                'INSERT INTO users (nome, cognome, email, password, nazionalita_id, lingua_id)
-                 VALUES (:nome, :cognome, :email, :password, :naz_id, :ling_id)'
+                'INSERT INTO users (nome, cognome, email, password, nazionalita, lingua)
+                 VALUES (:nome, :cognome, :email, :password, :nazionalita, :lingua)'
             );
             $stmt->execute([
-                ':nome'    => $nome,
-                ':cognome' => $cognome,
-                ':email'   => $email,
-                ':password'=> $hash,
-                ':naz_id'  => $naz_id,
-                ':ling_id' => $ling_id,
+                ':nome'        => $nome,
+                ':cognome'     => $cognome,
+                ':email'       => $email,
+                ':password'    => $hash,
+                ':nazionalita' => $nazionalita,
+                ':lingua'      => $lingua,
             ]);
             $success = true;
         }
@@ -138,17 +137,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div>
               <div class="input-wrap">
                 <label>Nazionalità *</label>
-                <select name="nazionalita_id" required>
-                  <?= nazionalitaOptions((int)($_POST['nazionalita_id'] ?? 0)) ?>
-                </select>
+                <input type="text" name="nazionalita" required value="<?= htmlspecialchars($_POST['nazionalita'] ?? '') ?>" placeholder="Italiana">
               </div>
             </div>
             <div>
               <div class="input-wrap">
                 <label>Lingua principale *</label>
-                <select name="lingua_id" required>
-                  <?= lingueOptions((int)($_POST['lingua_id'] ?? 0)) ?>
-                </select>
+                <input type="text" name="lingua" required value="<?= htmlspecialchars($_POST['lingua'] ?? '') ?>" placeholder="Italiano">
               </div>
             </div>
           </div>
