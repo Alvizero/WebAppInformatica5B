@@ -57,7 +57,7 @@ if (isAgency()) {
       </div>
 
       <div class="filter-section">
-        <label class="filter-label">Destinazione</label>
+        <label class="filter-label">Destinazione (Città, Hotel, ecc.) *</label>
         <div class="search-bar-map">
           <input type="text" id="f-citta" placeholder="es. Barcellona, Roma…">
           <button type="button" onclick="geocodeCitta()" title="Cerca città">

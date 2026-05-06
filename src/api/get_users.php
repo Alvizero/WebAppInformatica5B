@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../shared/db_config.php';
+require_once __DIR__ . '/../shared/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $lingua      = trim($_GET['lingua']      ?? '');
@@ -12,6 +13,7 @@ $lng         = filter_input(INPUT_GET, 'lng',    FILTER_VALIDATE_FLOAT);
 $raggio      = filter_input(INPUT_GET, 'raggio', FILTER_VALIDATE_INT);
 
 $pdo = getPDO();
+$current_uid = currentUser()['id'];
 
 $haversine = '(6371 * ACOS(
     COS(RADIANS(:lat)) * COS(RADIANS(v.latitudine)) *
@@ -22,6 +24,7 @@ $haversine = '(6371 * ACOS(
 $params = [
     'inizio'      => $inizio,
     'fine'        => $fine,
+    'current_user_id' => $current_uid,
 ];
 
 $distCol = 'NULL';
@@ -39,7 +42,8 @@ $sql = "SELECT u.id AS user_id, u.nome, u.cognome, u.nazionalita, u.lingua,
         FROM viaggi v
         JOIN users u ON u.id = v.user_id
         WHERE v.data_inizio <= :fine
-          AND v.data_fine   >= :inizio";
+          AND v.data_fine   >= :inizio
+          AND v.user_id != :current_user_id";
 
 if (!empty($lingua)) {
     $sql .= " AND u.lingua = :lingua";
@@ -61,9 +65,6 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $results = $stmt->fetchAll();
 
-require_once __DIR__ . '/../shared/auth.php';
-$current_uid = currentUser()['id'];
-
 // Recupero pacchetti per la località cercata (se presente)
 $pacchetti = [];
 $citta = trim($_GET['citta'] ?? '');
@@ -84,3 +85,4 @@ echo json_encode([
     'users' => $results,
     'pacchetti' => $pacchetti
 ]);
+?>

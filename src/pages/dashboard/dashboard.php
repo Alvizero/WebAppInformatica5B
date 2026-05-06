@@ -73,7 +73,7 @@ if (isset($_GET['edit'])) {
         </div>
 
         <div class="input-wrap">
-          <label>Destinazione *</label>
+          <label>Destinazione (Città, Hotel, ecc.) *</label>
           <div class="search-bar">
             <input type="text" id="geocode-input" placeholder="Cerca una città…">
             <button type="button" onclick="geocodeSearch()" title="Cerca">
