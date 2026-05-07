@@ -225,19 +225,19 @@ $conversations = $stmt->fetchAll();
       fetch('../../api/delete_package_conversation.php', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(d => {
-          if (d.success) location.reload();
-          else alert('Errore: ' + d.error);
+          if (d.success) { showToast('Conversazione eliminata.', 'success'); setTimeout(() => location.reload(), 800); }
+          else showToast('Errore: ' + d.error, 'error');
         })
-        .catch(e => alert('Errore: ' + e.message));
+        .catch(e => showToast('Errore: ' + e.message, 'error'));
     } else {
       formData.append('conversation_id', conversationId);
       fetch('../../api/delete_conversation.php', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(d => {
-          if (d.success) location.reload();
-          else alert('Errore: ' + d.error);
+          if (d.success) { showToast('Conversazione eliminata.', 'success'); setTimeout(() => location.reload(), 800); }
+          else showToast('Errore: ' + d.error, 'error');
         })
-        .catch(e => alert('Errore: ' + e.message));
+        .catch(e => showToast('Errore: ' + e.message, 'error'));
     }
   }
 </script>

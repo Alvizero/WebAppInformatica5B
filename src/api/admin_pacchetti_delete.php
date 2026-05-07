@@ -34,6 +34,10 @@ if ($id > 0) {
     $stmt->execute([$id]);
 }
 
-$redirect = isAgency() ? '../pages/agency/agency.php' : '../pages/admin/admin.php';
-redirect($redirect . '?success_msg=Pacchetto eliminato');
+if (isAgency()) {
+    redirect('../pages/agency/agency.php', 'Pacchetto eliminato con successo.');
+} else {
+    setFlash('reset_msg', '✅ Pacchetto eliminato con successo.');
+    redirect('../pages/admin/admin.php');
+}
 ?>

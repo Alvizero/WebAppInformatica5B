@@ -69,17 +69,19 @@ $errorMsg = getFlash('reset_error');
 <div class="container agency-page">
 
   <?php if ($resetMsg): ?>
-    <div class="alert alert-success" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <?= htmlspecialchars($resetMsg) ?>
-    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      showToast(<?= json_encode(strip_tags($resetMsg)) ?>, 'success');
+    });
+  </script>
   <?php endif; ?>
 
   <?php if ($errorMsg): ?>
-    <div class="alert alert-error" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <?= htmlspecialchars($errorMsg) ?>
-    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      showToast(<?= json_encode(strip_tags($errorMsg)) ?>, 'error');
+    });
+  </script>
   <?php endif; ?>
 
   <!-- Header -->
@@ -369,10 +371,10 @@ $errorMsg = getFlash('reset_error');
     try {
       const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
       const data = await res.json();
-      if (!data.length) { alert('Nessun risultato trovato.'); return; }
+      if (!data.length) { showToast('Nessun risultato trovato.', 'info'); return; }
       pkgMap.setView([+data[0].lat, +data[0].lon], 10);
       setPkgMarker(+data[0].lat, +data[0].lon, data[0].display_name);
-    } catch { alert('Errore durante la ricerca.'); }
+    } catch { showToast('Errore durante la ricerca.', 'error'); }
   }
 
   function deleteConversation(conversationId, isPackage) {
@@ -384,19 +386,19 @@ $errorMsg = getFlash('reset_error');
       fetch('../../api/delete_package_conversation.php', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(d => {
-          if (d.success) location.reload();
-          else alert('Errore: ' + d.error);
+          if (d.success) { showToast('Conversazione eliminata.', 'success'); setTimeout(() => location.reload(), 800); }
+          else showToast('Errore: ' + d.error, 'error');
         })
-        .catch(e => alert('Errore: ' + e.message));
+        .catch(e => showToast('Errore: ' + e.message, 'error'));
     } else {
       formData.append('conversation_id', conversationId);
       fetch('../../api/delete_conversation.php', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(d => {
-          if (d.success) location.reload();
-          else alert('Errore: ' + d.error);
+          if (d.success) { showToast('Conversazione eliminata.', 'success'); setTimeout(() => location.reload(), 800); }
+          else showToast('Errore: ' + d.error, 'error');
         })
-        .catch(e => alert('Errore: ' + e.message));
+        .catch(e => showToast('Errore: ' + e.message, 'error'));
     }
   }
 </script>

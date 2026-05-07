@@ -64,7 +64,7 @@ document.addEventListener('click', function (e) {
 })();
 
 // ── Toast Notification System ──
-window.showToast = function(msg, type = 'info') {
+window.showToast = function(msg, type = 'info', duration = 4000) {
   const colors = { 
     info: 'var(--brand)', 
     error: 'var(--error)', 
@@ -90,7 +90,7 @@ window.showToast = function(msg, type = 'info') {
     t.style.opacity = '0'; 
     t.style.transform = 'translateY(10px)';
     setTimeout(() => t.remove(), 300); 
-  }, 4000);
+  }, duration);
 };
 
 // Auto-show toasts from URL params

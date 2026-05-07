@@ -7,7 +7,15 @@ requireAdmin();
 
 $id = (int)($_POST['viaggio_id'] ?? 0);
 if ($id > 0) {
-    getPDO()->prepare("DELETE FROM viaggi WHERE id=:id")->execute(['id' => $id]);
+    $stmt = getPDO()->prepare("DELETE FROM viaggi WHERE id=:id");
+    $stmt->execute(['id' => $id]);
+    if ($stmt->rowCount() > 0) {
+        setFlash('reset_msg', "✅ Viaggio #$id eliminato con successo.");
+    } else {
+        setFlash('reset_error', '❌ Viaggio non trovato.');
+    }
+} else {
+    setFlash('reset_error', '❌ ID viaggio non valido.');
 }
 
 redirect('../pages/admin/admin.php');

@@ -433,10 +433,10 @@ $messaggi = $messaggi->fetchAll();
     fetch('../../api/delete_support_ticket.php', { method: 'POST', body: formData })
       .then(r => r.json())
       .then(d => {
-        if (d.success) window.location.href = './supporto.php';
-        else alert('Errore: ' + d.error);
+        if (d.success) window.location.href = './supporto.php?success_msg=' + encodeURIComponent('Ticket eliminato con successo.');
+        else showToast('Errore: ' + d.error, 'error');
       })
-      .catch(e => alert('Errore: ' + e.message));
+      .catch(e => showToast('Errore: ' + e.message, 'error'));
   }
 </script>
 <script src="../../shared/app.js"></script>

@@ -42,18 +42,28 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
 <div class="container admin-page">
 
   <?php if ($resetMsg): ?>
-    <div class="alert alert-success" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <?= htmlspecialchars($resetMsg) ?>
-      <br><small style="opacity:.8;margin-top:.3rem;display:block;">Comunica la password temporanea all'utente e invitalo a cambiarla subito.</small>
-    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      <?php
+        // If it's a password reset message, extract password and show two toasts
+        if (preg_match('/Password temporanea.*?<strong>(.*?)<\/strong>/s', $resetMsg, $m)) {
+          $pwd = htmlspecialchars($m[1]);
+          echo "showToast(" . json_encode(strip_tags($resetMsg)) . ", 'success', 8000);";
+          echo "setTimeout(function(){ showToast('🔑 Password: $pwd — comunicala all\\'utente e invitalo a cambiarla subito.', 'warning', 10000); }, 600);";
+        } else {
+          echo "showToast(" . json_encode(strip_tags($resetMsg)) . ", 'success');";
+        }
+      ?>
+    });
+  </script>
   <?php endif; ?>
 
   <?php if ($errorMsg): ?>
-    <div class="alert alert-error" style="margin-bottom:1.25rem;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <?= htmlspecialchars($errorMsg) ?>
-    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      showToast(<?= json_encode(strip_tags($errorMsg)) ?>, 'error');
+    });
+  </script>
   <?php endif; ?>
 
   <!-- Header -->
@@ -535,10 +545,10 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
     try {
       const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
       const data = await res.json();
-      if (!data.length) { alert('Nessun risultato trovato.'); return; }
+      if (!data.length) { showToast('Nessun risultato trovato.', 'info'); return; }
       pkgMap.setView([+data[0].lat, +data[0].lon], 10);
       setPkgMarker(+data[0].lat, +data[0].lon, data[0].display_name);
-    } catch { alert('Errore durante la ricerca.'); }
+    } catch { showToast('Errore durante la ricerca.', 'error'); }
   }
 
   function openPkgModal(pkg = null) {

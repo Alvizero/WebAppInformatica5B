@@ -80,12 +80,8 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
           <?= htmlspecialchars($e) ?>
         </div>
       <?php endforeach; ?>
-
-      <?php if ($success): ?>
-        <div class="alert alert-success">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Profilo aggiornato con successo!
-        </div>
+      <?php if (!empty($errors)): ?>
+      <script>document.addEventListener('DOMContentLoaded', function(){ showToast(<?= json_encode($errors[0]) ?>, 'error'); }); </script>
       <?php endif; ?>
 
       <form method="POST" class="form-grid">

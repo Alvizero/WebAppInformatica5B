@@ -191,10 +191,10 @@ if (isset($_GET['edit'])) {
     try {
       const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
       const data = await res.json();
-      if (!data.length) { alert('Nessun risultato trovato.'); return; }
+      if (!data.length) { showToast('Nessun risultato trovato.', 'info'); return; }
       map.setView([+data[0].lat, +data[0].lon], 10);
       setMarker(+data[0].lat, +data[0].lon, data[0].display_name);
-    } catch { alert('Errore durante la ricerca.'); }
+    } catch { showToast('Errore durante la ricerca.', 'error'); }
   }
 
   document.getElementById('geocode-input').addEventListener('keydown', e => {
