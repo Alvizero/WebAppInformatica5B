@@ -65,49 +65,23 @@
   --transition:   0.2s cubic-bezier(.4,0,.2,1);
   --transition-slow: 0.35s cubic-bezier(.4,0,.2,1);
   --spring:       0.3s cubic-bezier(.34,1.56,.64,1);
+
+  --warning-text:  #92400e;
+  --warning-bd:    #fde68a;
+  --purple-bg:     #ede9fe;
+  --purple-text:   #5b21b6;
+  --success-text:  #065f46;
+  --error-text:    #b91c1c;
+  --brand-dark-text: #1e40af;
+
+  /* Ocean (used in auth links) */
+  --ocean:        #0ea5e9;
+  --ocean-dark:   #0284c7;
 }
 
 /* ── Dark Mode ── */
-@media (prefers-color-scheme: dark) {
-  :root.dark-mode {
-    /* Brand */
-    --brand:        #3b82f6;
-    --brand-dark:   #1e40af;
-    --brand-light:  #60a5fa;
-    --brand-glow:   rgba(59,130,246,.25);
-
-    /* Neutrals */
-    --ink:          #f1f5f9;
-    --ink-soft:     #e2e8f0;
-    --ink-mid:      #cbd5e1;
-    --muted:        #94a3b8;
-    --muted-lt:     #64748b;
-
-    /* Surfaces */
-    --surface:      #1e293b;
-    --surface-2:    #0f172a;
-    --surface-3:    #334155;
-    --white:        #0f172a;
-
-    /* Semantic */
-    --success-bg:   rgba(16,185,129,.15);
-    --success-bd:   rgba(16,185,129,.3);
-    --error-bg:     rgba(239,68,68,.15);
-    --error-bd:     rgba(239,68,68,.3);
-    --warning-bg:   rgba(245,158,11,.15);
-    --info-bg:      rgba(59,130,246,.15);
-
-    /* Borders */
-    --border:       rgba(255,255,255,.08);
-    --border-2:     rgba(255,255,255,.14);
-
-    /* Shadows */
-    --shadow-sm:    0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
-    --shadow:       0 4px 16px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.15);
-    --shadow-lg:    0 10px 40px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
-    --shadow-xl:    0 20px 60px rgba(0,0,0,.45);
-  }
-}
+/* Note: dark mode is applied via JS class toggle (.dark-mode on <html>).
+   The @media block below is intentionally removed to avoid conflicts. */
 
 :root.dark-mode {
   /* Brand */
@@ -127,7 +101,7 @@
   --surface:      #1e293b;
   --surface-2:    #0f172a;
   --surface-3:    #334155;
-  --white:        #0f172a;
+  --white:        #1e293b;
 
   /* Semantic */
   --success-bg:   rgba(16,185,129,.15);
@@ -146,6 +120,19 @@
   --shadow:       0 4px 16px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.15);
   --shadow-lg:    0 10px 40px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
   --shadow-xl:    0 20px 60px rgba(0,0,0,.45);
+
+  /* Ocean */
+  --ocean:        #38bdf8;
+  --ocean-dark:   #0ea5e9;
+
+  /* Semantic text colors - dark mode adjusted */
+  --warning-text:  #fcd34d;
+  --warning-bd:    rgba(245,158,11,.4);
+  --purple-bg:     rgba(139,92,246,.15);
+  --purple-text:   #c4b5fd;
+  --success-text:  #34d399;
+  --error-text:    #f87171;
+  --brand-dark-text: #93c5fd;
 }
 
 /* ── Base ── */
@@ -252,7 +239,7 @@ header {
 }
 
 :root.dark-mode header {
-  background: rgba(15,23,42,.92);
+  background: rgba(15,23,42,.95);
 }
 
 header.scrolled {
@@ -695,7 +682,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
   color: var(--error);
   border: 1px solid var(--error-bd);
 }
-.btn-danger:hover { background: #fee2e2; }
+.btn-danger:hover { background: var(--error-bg); filter: brightness(0.92); }
 
 .btn-ocean {
   background: #0ea5e9;
@@ -748,7 +735,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
   text-decoration: none;
   transition: all var(--transition);
 }
-.btn-edit:hover { background: #dbeafe; color: var(--brand-dark); text-decoration: none; }
+.btn-edit:hover { background: var(--info-bg); filter: brightness(0.92); color: var(--brand-dark); text-decoration: none; }
 
 .btn-delete {
   display: inline-flex;
@@ -764,7 +751,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
   cursor: pointer;
   transition: all var(--transition);
 }
-.btn-delete:hover { background: #fee2e2; }
+.btn-delete:hover { background: var(--error-bg); filter: brightness(0.92); }
 
 /* ALERTS*/
 .alert {
@@ -778,10 +765,10 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
   font-weight: 500;
   animation: slideDown .2s ease;
 }
-.alert-error   { background: var(--error-bg); color: #b91c1c; border: 1px solid var(--error-bd); }
-.alert-success { background: var(--success-bg); color: #065f46; border: 1px solid var(--success-bd); }
-.alert-info    { background: var(--info-bg); color: var(--brand-dark); border: 1px solid rgba(37,99,235,.2); }
-.alert-warning { background: var(--warning-bg); color: #92400e; border: 1px solid #fde68a; }
+.alert-error   { background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-bd); }
+.alert-success { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-bd); }
+.alert-info    { background: var(--info-bg); color: var(--brand-dark-text); border: 1px solid rgba(37,99,235,.2); }
+.alert-warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-bd); }
 
 /* BADGES */
 .badge {
@@ -796,14 +783,14 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
   letter-spacing: .05em;
   white-space: nowrap;
 }
-.badge-aperto   { background: #fef3c7; color: #92400e; }
-.badge-risposto { background: var(--success-bg); color: #065f46; }
+.badge-aperto   { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-bd); }
+.badge-risposto { background: var(--success-bg); color: var(--success-text); }
 .badge-chiuso   { background: var(--surface-3); color: var(--muted); }
-.badge-user     { background: #ede9fe; color: #5b21b6; }
-.badge-admin    { background: #fef3c7; color: #92400e; }
+.badge-user     { background: var(--purple-bg); color: var(--purple-text); }
+.badge-admin    { background: var(--warning-bg); color: var(--warning-text); }
 .badge-level-0  { background: var(--brand); color: #fff; }
-.badge-level-1  { background: #fef3c7; color: #92400e; }
-.badge-level-2  { background: #ede9fe; color: #5b21b6; }
+.badge-level-1  { background: var(--warning-bg); color: var(--warning-text); }
+.badge-level-2  { background: var(--purple-bg); color: var(--purple-text); }
 .badge-level-255{ background: var(--surface-3); color: var(--muted); }
 
 /* SEARCH BAR */
@@ -978,4 +965,99 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 }
 @media (max-width: 480px) {
   .card { padding: 1.25rem; }
+}
+
+/* ── Dark Mode UX Enhancements ── */
+
+/* Smooth theme transition on all relevant properties */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
+/* Exclude elements where transitions cause jank */
+img, svg, video, canvas,
+[class*="animate-"],
+.bubble, .chat-box * {
+  transition: none !important;
+}
+
+/* ── Focus Visible (accessibility) ── */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Selection color ── */
+::selection {
+  background: var(--brand-glow);
+  color: var(--ink);
+}
+
+/* ── Dark mode: improve contrast on nav-profile-menu ── */
+:root.dark-mode .nav-profile-menu {
+  background: var(--surface);
+  border-color: var(--border-2);
+}
+
+/* ── Dark mode: improve input backgrounds ── */
+:root.dark-mode input[type="text"],
+:root.dark-mode input[type="email"],
+:root.dark-mode input[type="password"],
+:root.dark-mode input[type="date"],
+:root.dark-mode select,
+:root.dark-mode textarea {
+  color-scheme: dark;
+}
+
+/* ── Dark mode: fix admin badge ── */
+:root.dark-mode .admin-badge-me {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: var(--warning-bd);
+}
+
+/* ── Dark mode: fix btn-nav-login ── */
+:root.dark-mode .btn-nav-login {
+  background: var(--surface-3) !important;
+  color: var(--ink) !important;
+  border-color: var(--border-2) !important;
+}
+:root.dark-mode .btn-nav-login:hover {
+  background: var(--surface-2) !important;
+}
+
+/* ── Dark mode: stat-card icon backgrounds ── */
+:root.dark-mode .stat-icon {
+  background: var(--info-bg);
+}
+
+/* ── Improved card hover in dark mode ── */
+:root.dark-mode .card:hover,
+:root.dark-mode .trip-card:hover,
+:root.dark-mode .stat-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-2);
+}
+
+/* ── Dark mode: search-bar ── */
+:root.dark-mode .search-bar input:focus {
+  background: var(--surface-2);
+}
+
+/* ── Loading skeleton animation ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
 }

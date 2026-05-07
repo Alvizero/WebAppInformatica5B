@@ -276,7 +276,7 @@ if (isAgency()) {
     users.forEach((u, i) => {
       const isSelf = parseInt(u.user_id) === parseInt(currentUserId);
       const popup = `<div style="padding:.85rem 1rem;font-family:'Inter',sans-serif;min-width:190px;max-width:240px;">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;color:#0f172a;margin-bottom:.5rem;">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.5rem;">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
         <div style="font-size:.8rem;color:#64748b;line-height:1.8;">
           🌍 ${escHtml(u.nazionalita)} &nbsp;·&nbsp; 🗣 ${escHtml(u.lingua)}<br>
           📍 ${escHtml(u.destinazione.substring(0,50))}…<br>

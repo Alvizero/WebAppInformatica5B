@@ -148,7 +148,7 @@ $conversations = $stmt->fetchAll();
       flex-shrink: 0;
     }
     .conv-delete-btn:hover {
-      color: #ef4444;
+      color: var(--error);
     }
     .empty-state {
       text-align: center;

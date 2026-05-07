@@ -26,7 +26,7 @@
   padding: .3rem .8rem;
   border-radius: 999px;
   background: var(--warning-bg);
-  color: #92400e;
+  color: var(--warning-text);
   border: 1px solid #fde68a;
 }
 

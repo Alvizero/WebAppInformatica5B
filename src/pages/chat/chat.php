@@ -220,7 +220,7 @@ $messaggi = $stmt->fetchAll();
       position: absolute;
       bottom: 100%;
       right: 0;
-      background: white;
+      background: var(--white);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow-lg);

@@ -113,9 +113,9 @@ $messaggi = $messaggi->fetchAll();
     }
     .bubble.admin-msg {
       align-self: flex-start;
-      background: #fffbeb;
+      background: var(--warning-bg);
       color: var(--ink);
-      border: 1px solid #fde68a;
+      border: 1px solid var(--warning-bd);
       border-bottom-left-radius: 4px;
     }
     .bubble-meta {

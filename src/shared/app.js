@@ -53,14 +53,18 @@ document.addEventListener('click', function (e) {
   
   function updateThemeIcons() {
     const isDark = html.classList.contains('dark-mode');
-    const lightIcon = document.querySelector('.theme-icon-light');
-    const darkIcon = document.querySelector('.theme-icon-dark');
+    document.querySelectorAll('.theme-icon-light').forEach(el => el.style.display = isDark ? 'none' : 'block');
+    document.querySelectorAll('.theme-icon-dark').forEach(el => el.style.display = isDark ? 'block' : 'none');
     const label = document.getElementById('theme-label');
-    if (lightIcon) lightIcon.style.display = isDark ? 'none' : 'block';
-    if (darkIcon) darkIcon.style.display = isDark ? 'block' : 'none';
     if (label) label.textContent = isDark ? 'Tema chiaro' : 'Tema scuro';
   }
-  updateThemeIcons();
+
+  // Run after DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateThemeIcons);
+  } else {
+    updateThemeIcons();
+  }
 })();
 
 // ── Toast Notification System ──
