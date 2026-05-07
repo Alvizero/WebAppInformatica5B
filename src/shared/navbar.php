@@ -18,7 +18,7 @@ startSession();
   </button>
 
   <nav id="main-nav">
-    <?php if (!isAgency()): ?>
+    <?php if (isLoggedIn() && !isAgency()): ?>
       <a href="./../map_view/map_view.php" class="<?= strpos($_SERVER['PHP_SELF'] ?? '', 'map_view') !== false ? 'nav-active' : '' ?>">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Cerca compagni
       </a>

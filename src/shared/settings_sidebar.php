@@ -1,8 +1,5 @@
 <?php
-/**
- * Sidebar condivisa per le pagine del profilo e delle impostazioni.
- * Variabili attese: $dbUser (array con nome, cognome, email), $activePage (string)
- */
+
 $initials = strtoupper(mb_substr($dbUser['nome'] ?? '', 0, 1) . mb_substr($dbUser['cognome'] ?? '', 0, 1));
 ?>
 
