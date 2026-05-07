@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../../shared/base.css">
+  <link rel="stylesheet" href="../../shared/auth.css">
   <link rel="stylesheet" href="login.css">
 </head>
 <body>

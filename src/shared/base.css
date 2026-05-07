@@ -215,9 +215,7 @@ small { font-size: .8rem; }
 .delay-4 { animation-delay: .20s; }
 .delay-5 { animation-delay: .25s; }
 
-/* 
-   NAVBAR
-    */
+/* ── Navbar ── */
 header {
   position: sticky;
   top: 0;
@@ -556,9 +554,7 @@ nav a.nav-active {
   .nav-profile-menu.open { display: block; }
 }
 
-/* 
-   CARDS
-    */
+/* ── Cards ── */
 .card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -569,13 +565,10 @@ nav a.nav-active {
 }
 .card:hover { box-shadow: var(--shadow-lg); }
 
-/* 
-   FORM ELEMENTS
-    */
+/* ── Form Elements ── */
 .form-group { margin-bottom: 1.1rem; }
 
-.form-group label,
-.input-wrap label,
+:is(.form-group, .input-wrap) label,
 label {
   display: block;
   font-size: .8rem;
@@ -586,12 +579,7 @@ label {
   margin-bottom: .4rem;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea,
-.input-wrap input,
-.input-wrap select,
-.input-wrap textarea,
+:is(.form-group, .input-wrap) :is(input, select, textarea),
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -630,9 +618,7 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 .form-grid .full { grid-column: 1 / -1; }
 @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
 
-/* 
-   BUTTONS
-    */
+/* ── Buttons ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -694,32 +680,11 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 .btn-lg { font-size: 1rem; padding: .85rem 2rem; }
 .btn-full { width: 100%; }
 
-.btn-submit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .45rem;
-  width: 100%;
-  padding: .75rem 1.4rem;
-  background: var(--brand);
+.btn-ocean {
+  background: var(--ocean);
   color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-size: .95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  margin-top: 1.25rem;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 2px 8px var(--brand-glow);
 }
-.btn-submit:hover {
-  background: var(--brand-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px var(--brand-glow);
-}
-
-/* Legacy compat */
+.btn-ocean:hover { background: var(--ocean-dark); }
 .btn-edit {
   display: inline-flex;
   align-items: center;
@@ -969,17 +934,17 @@ input::placeholder, textarea::placeholder { color: var(--muted-lt); }
 
 /* ── Dark Mode UX Enhancements ── */
 
-/* Smooth theme transition on all relevant properties */
-*, *::before, *::after {
+/* Smooth theme transition on key color properties */
+body,
+header,
+.card, .form-card, .settings-card, .settings-sidebar,
+.nav-profile-menu, .nav-profile-btn,
+input, select, textarea,
+.badge, .alert,
+.btn, .btn-edit, .btn-delete {
   transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(.4,0,.2,1);
-}
-/* Exclude elements where transitions cause jank */
-img, svg, video, canvas,
-[class*="animate-"],
-.bubble, .chat-box * {
-  transition: none !important;
 }
 
 /* ── Focus Visible (accessibility) ── */
