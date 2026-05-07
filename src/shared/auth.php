@@ -53,7 +53,7 @@ function adminLevelLabel(int $level): string {
 function requireLogin(): void {
     if (!isLoggedIn()) {
         $redirect = urlencode($_SERVER['REQUEST_URI']);
-        header('Location: /informatica/mene2/src/pages/login/login.php?redirect=' . $redirect);
+        header('Location: ./src/pages/login/login.php?redirect=' . $redirect);
         exit;
     }
 }
@@ -61,7 +61,7 @@ function requireLogin(): void {
 function requireAdmin(): void {
     requireLogin();
     if (!isAdmin()) {
-        header('Location: /informatica/mene2/src/pages/dashboard/dashboard.php');
+        header('Location: ./src/pages/dashboard/dashboard.php');
         exit;
     }
 }
@@ -69,7 +69,7 @@ function requireAdmin(): void {
 function requireAdminLevel(int $maxLevel): void {
     requireLogin();
     if (!isAdminLevel($maxLevel)) {
-        header('Location: /informatica/mene2/src/pages/dashboard/dashboard.php');
+        header('Location: ./src/pages/dashboard/dashboard.php');
         exit;
     }
 }
@@ -77,7 +77,7 @@ function requireAdminLevel(int $maxLevel): void {
 function requireAgency(): void {
     requireLogin();
     if (!isAgency()) {
-        header('Location: /informatica/mene2/src/pages/dashboard/dashboard.php');
+        header('Location: ./src/pages/dashboard/dashboard.php');
         exit;
     }
 }
