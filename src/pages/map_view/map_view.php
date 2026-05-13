@@ -43,18 +43,27 @@ if (isAgency()) {
         <input type="text" id="f-lingua" placeholder="es. Italiano, English…">
       </div>
 
-      <div class="filter-section">
-        <label class="filter-label">Nazionalità <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
-        <input type="text" id="f-nazionalita" placeholder="es. Italiana, Francese…">
-      </div>
+<div class="filter-section">
+	        <label class="filter-label">Nazionalità <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
+	        <select id="f-nazionalita" class="form-select">
+	          <option value="">Tutte le nazionalità</option>
+	          <?php 
+	          $countries = require __DIR__ . '/../../shared/countries.php';
+	          foreach ($countries as $c): ?>
+	            <option value="<?= htmlspecialchars($c) ?>"><?= htmlspecialchars($c) ?></option>
+	          <?php endforeach; ?>
+	        </select>
+	      </div>
 
-      <div class="filter-section">
-        <label class="filter-label">Periodo di viaggio</label>
-        <div class="date-grid">
-          <input type="date" id="f-inizio" title="Data inizio">
-          <input type="date" id="f-fine" title="Data fine">
-        </div>
-      </div>
+<div class="filter-section">
+	        <label class="filter-label">Periodo di viaggio</label>
+	        <div class="date-grid">
+	          <input type="date" id="f-inizio" title="Data inizio" oninput="validateSearchDates()">
+	          <input type="date" id="f-fine" title="Data fine" oninput="validateSearchDates()">
+	        </div>
+	        <div id="error-search-inizio" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data deve essere odierna o successiva.</div>
+	        <div id="error-search-fine" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data fine deve essere successiva all'inizio.</div>
+	      </div>
 
       <div class="filter-section">
         <label class="filter-label">Destinazione (Città, Hotel, ecc.) *</label>
@@ -161,17 +170,52 @@ if (isAgency()) {
   });
 
   // ── Ricerca utenti ──
-  async function searchUsers() {
-    const lingua      = document.getElementById('f-lingua').value.trim();
-    const nazionalita = document.getElementById('f-nazionalita').value.trim();
-    const inizio      = document.getElementById('f-inizio').value;
-    const fine        = document.getElementById('f-fine').value;
-    const lat         = document.getElementById('f-lat').value;
-    const lng         = document.getElementById('f-lng').value;
-    const raggio      = document.getElementById('f-raggio').value;
-    const citta       = document.getElementById('f-citta').value.trim();
-
-    if (!inizio || !fine)        { showToast('Inserisci le date del tuo viaggio.', 'warning'); return; }
+function validateSearchDates() {
+	    const inizioInput = document.getElementById('f-inizio');
+	    const fineInput   = document.getElementById('f-fine');
+	    const errInizio   = document.getElementById('error-search-inizio');
+	    const errFine     = document.getElementById('error-search-fine');
+	    const today       = new Date().toISOString().split('T')[0];
+	    
+	    let isValid = true;
+	
+	    if (inizioInput.value && inizioInput.value < today) {
+	      errInizio.style.display = 'block';
+	      inizioInput.style.borderColor = 'var(--error)';
+	      isValid = false;
+	    } else {
+	      errInizio.style.display = 'none';
+	      inizioInput.style.borderColor = '';
+	    }
+	
+	    if (fineInput.value && inizioInput.value && fineInput.value < inizioInput.value) {
+	      errFine.style.display = 'block';
+	      fineInput.style.borderColor = 'var(--error)';
+	      isValid = false;
+	    } else {
+	      errFine.style.display = 'none';
+	      fineInput.style.borderColor = '';
+	    }
+	
+	    return isValid;
+	  }
+	
+	  async function searchUsers() {
+	    const lingua      = document.getElementById('f-lingua').value.trim();
+	    const nazionalita = document.getElementById('f-nazionalita').value.trim();
+	    const inizio      = document.getElementById('f-inizio').value;
+	    const fine        = document.getElementById('f-fine').value;
+	    const lat         = document.getElementById('f-lat').value;
+	    const lng         = document.getElementById('f-lng').value;
+	    const raggio      = document.getElementById('f-raggio').value;
+	    const citta       = document.getElementById('f-citta').value.trim();
+	
+	    if (!inizio || !fine) {
+	      showToast('Inserisci le date del tuo viaggio.', 'warning');
+	      return;
+	    }
+	
+	    if (!validateSearchDates()) return;
 
     // Salva ricerca recente
     saveRecentSearch({ lingua, nazionalita, inizio, fine, lat, lng, raggio, citta });

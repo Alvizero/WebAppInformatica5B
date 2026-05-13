@@ -395,10 +395,16 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
         <input type="email" name="email" id="edit-email" required>
       </div>
       <div class="modal-row">
-        <div class="modal-group">
-          <label>Nazionalità</label>
-          <input type="text" name="nazionalita" id="edit-nazionalita" placeholder="es. Italiana">
-        </div>
+<div class="modal-group">
+	          <label>Nazionalità</label>
+	          <select name="nazionalita" id="edit-nazionalita" class="form-select">
+	            <?php 
+	            $countries = require __DIR__ . '/../../shared/countries.php';
+	            foreach ($countries as $c): ?>
+	              <option value="<?= htmlspecialchars($c) ?>"><?= htmlspecialchars($c) ?></option>
+	            <?php endforeach; ?>
+	          </select>
+	        </div>
         <div class="modal-group">
           <label>Lingua</label>
           <input type="text" name="lingua" id="edit-lingua" placeholder="es. Italiano">

@@ -19,7 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome        = trim($_POST['nome']        ?? '');
     $cognome     = trim($_POST['cognome']     ?? '');
     $email       = trim($_POST['email']       ?? '');
+    $countries   = require __DIR__ . '/../../shared/countries.php';
     $nazionalita = trim($_POST['nazionalita'] ?? '');
+    if (!empty($nazionalita) && !in_array($nazionalita, $countries)) {
+        $errors[] = 'Nazionalità non valida.';
+    }
     $lingua      = trim($_POST['lingua']      ?? '');
 
     if (empty($nome))                               $errors[] = 'Il nome è obbligatorio.';
@@ -103,12 +107,21 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
             <input type="email" name="email" required value="<?= htmlspecialchars($dbUser['email'] ?? '') ?>" placeholder="nome@esempio.com">
           </div>
         </div>
-        <div>
-          <div class="input-wrap">
-            <label>Nazionalità *</label>
-            <input type="text" name="nazionalita" required value="<?= htmlspecialchars($dbUser['nazionalita'] ?? '') ?>" placeholder="es. Italiana">
-          </div>
-        </div>
+<div>
+	          <div class="input-wrap">
+	            <label>Nazionalità *</label>
+	            <select name="nazionalita" required class="form-select">
+	              <option value="">Seleziona...</option>
+	              <?php 
+	              $countries = require __DIR__ . '/../../shared/countries.php';
+	              foreach ($countries as $c): ?>
+	                <option value="<?= htmlspecialchars($c) ?>" <?= (($dbUser['nazionalita'] ?? '') === $c) ? 'selected' : '' ?>>
+	                  <?= htmlspecialchars($c) ?>
+	                </option>
+	              <?php endforeach; ?>
+	            </select>
+	          </div>
+	        </div>
         <div>
           <div class="input-wrap">
             <label>Lingua principale *</label>
