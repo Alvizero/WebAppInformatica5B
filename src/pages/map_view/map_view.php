@@ -1,11 +1,17 @@
 <?php
 require_once __DIR__ . '/../../shared/auth.php';
+require_once __DIR__ . '/../../shared/db_config.php';
 requireLogin();
 
 if (isAgency()) {
     header('Location: ../agency/agency.php');
     exit;
 }
+
+$pdo = getPDO();
+// Carichiamo tutte le nazionalità dal database
+$stmtNaz = $pdo->query('SELECT id, nome FROM nazionalita ORDER BY nome ASC');
+$allNazionalita = $stmtNaz->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -43,27 +49,25 @@ if (isAgency()) {
         <input type="text" id="f-lingua" placeholder="es. Italiano, English…">
       </div>
 
-<div class="filter-section">
-	        <label class="filter-label">Nazionalità <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
-	        <select id="f-nazionalita" class="form-select">
-	          <option value="">Tutte le nazionalità</option>
-	          <?php 
-	          $countries = require __DIR__ . '/../../shared/countries.php';
-	          foreach ($countries as $c): ?>
-	            <option value="<?= htmlspecialchars($c) ?>"><?= htmlspecialchars($c) ?></option>
-	          <?php endforeach; ?>
-	        </select>
-	      </div>
+      <div class="filter-section">
+        <label class="filter-label">Nazionalità <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
+        <select id="f-nazionalita" class="form-select">
+          <option value="">Tutte le nazionalità</option>
+          <?php foreach ($allNazionalita as $naz): ?>
+            <option value="<?= (int)$naz['id'] ?>"><?= htmlspecialchars($naz['nome']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
 
-<div class="filter-section">
-	        <label class="filter-label">Periodo di viaggio</label>
-	        <div class="date-grid">
-	          <input type="date" id="f-inizio" title="Data inizio" oninput="validateSearchDates()">
-	          <input type="date" id="f-fine" title="Data fine" oninput="validateSearchDates()">
-	        </div>
-	        <div id="error-search-inizio" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data deve essere odierna o successiva.</div>
-	        <div id="error-search-fine" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data fine deve essere successiva all'inizio.</div>
-	      </div>
+      <div class="filter-section">
+        <label class="filter-label">Periodo di viaggio</label>
+        <div class="date-grid">
+          <input type="date" id="f-inizio" title="Data inizio" oninput="validateSearchDates()">
+          <input type="date" id="f-fine" title="Data fine" oninput="validateSearchDates()">
+        </div>
+        <div id="error-search-inizio" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data deve essere odierna o successiva.</div>
+        <div id="error-search-fine" class="inline-error" style="display:none; color:var(--error); font-size:0.7rem; margin-top:0.25rem; font-weight:600;">La data fine deve essere successiva all'inizio.</div>
+      </div>
 
       <div class="filter-section">
         <label class="filter-label">Destinazione (Città, Hotel, ecc.) *</label>
@@ -171,51 +175,51 @@ if (isAgency()) {
 
   // ── Ricerca utenti ──
 function validateSearchDates() {
-	    const inizioInput = document.getElementById('f-inizio');
-	    const fineInput   = document.getElementById('f-fine');
-	    const errInizio   = document.getElementById('error-search-inizio');
-	    const errFine     = document.getElementById('error-search-fine');
-	    const today       = new Date().toISOString().split('T')[0];
-	    
-	    let isValid = true;
-	
-	    if (inizioInput.value && inizioInput.value < today) {
-	      errInizio.style.display = 'block';
-	      inizioInput.style.borderColor = 'var(--error)';
-	      isValid = false;
-	    } else {
-	      errInizio.style.display = 'none';
-	      inizioInput.style.borderColor = '';
-	    }
-	
-	    if (fineInput.value && inizioInput.value && fineInput.value < inizioInput.value) {
-	      errFine.style.display = 'block';
-	      fineInput.style.borderColor = 'var(--error)';
-	      isValid = false;
-	    } else {
-	      errFine.style.display = 'none';
-	      fineInput.style.borderColor = '';
-	    }
-	
-	    return isValid;
-	  }
-	
-	  async function searchUsers() {
-	    const lingua      = document.getElementById('f-lingua').value.trim();
-	    const nazionalita = document.getElementById('f-nazionalita').value.trim();
-	    const inizio      = document.getElementById('f-inizio').value;
-	    const fine        = document.getElementById('f-fine').value;
-	    const lat         = document.getElementById('f-lat').value;
-	    const lng         = document.getElementById('f-lng').value;
-	    const raggio      = document.getElementById('f-raggio').value;
-	    const citta       = document.getElementById('f-citta').value.trim();
-	
-	    if (!inizio || !fine) {
-	      showToast('Inserisci le date del tuo viaggio.', 'warning');
-	      return;
-	    }
-	
-	    if (!validateSearchDates()) return;
+    const inizioInput = document.getElementById('f-inizio');
+    const fineInput   = document.getElementById('f-fine');
+    const errInizio   = document.getElementById('error-search-inizio');
+    const errFine     = document.getElementById('error-search-fine');
+    const today       = new Date().toISOString().split('T')[0];
+    
+    let isValid = true;
+
+    if (inizioInput.value && inizioInput.value < today) {
+      errInizio.style.display = 'block';
+      inizioInput.style.borderColor = 'var(--error)';
+      isValid = false;
+    } else {
+      errInizio.style.display = 'none';
+      inizioInput.style.borderColor = '';
+    }
+
+    if (fineInput.value && inizioInput.value && fineInput.value < inizioInput.value) {
+      errFine.style.display = 'block';
+      fineInput.style.borderColor = 'var(--error)';
+      isValid = false;
+    } else {
+      errFine.style.display = 'none';
+      fineInput.style.borderColor = '';
+    }
+
+    return isValid;
+  }
+
+  async function searchUsers() {
+    const lingua      = document.getElementById('f-lingua').value.trim();
+    const nazionalita = document.getElementById('f-nazionalita').value.trim();
+    const inizio      = document.getElementById('f-inizio').value;
+    const fine        = document.getElementById('f-fine').value;
+    const lat         = document.getElementById('f-lat').value;
+    const lng         = document.getElementById('f-lng').value;
+    const raggio      = document.getElementById('f-raggio').value;
+    const citta       = document.getElementById('f-citta').value.trim();
+
+    if (!inizio || !fine) {
+      showToast('Inserisci le date del tuo viaggio.', 'warning');
+      return;
+    }
+
+    if (!validateSearchDates()) return;
 
     // Salva ricerca recente
     saveRecentSearch({ lingua, nazionalita, inizio, fine, lat, lng, raggio, citta });
@@ -305,9 +309,9 @@ function validateSearchDates() {
     list.innerHTML = '';
 
     if (users.length > 0) {
-      count.innerHTML = `<span style="color:var(--success)">✓</span> ${users.length} compagno${users.length > 1 ? 'i' : ''} trovato${users.length > 1 ? 'i' : ''}`;
+      count.innerHTML = `<span style="display:inline-flex;align-items:center;gap:.4rem;background:#f0fdf4;color:#16a34a;padding:.3rem .75rem;border-radius:999px;border:1px solid rgba(22,163,74,.2);font-size:.8rem;font-weight:700;"><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>${users.length} compagno${users.length > 1 ? 'i' : ''} trovato${users.length > 1 ? 'i' : ''}</span>`;
     } else {
-      count.innerHTML = `<span style="color:var(--muted)">Nessun risultato con questi filtri.</span>`;
+      count.innerHTML = `<div style="padding:1.5rem .5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:.5rem;opacity:.4;">🔍</div><div style="color:var(--ink);font-size:.85rem;font-weight:600;margin-bottom:.25rem;">Nessun risultato</div><div style="color:var(--muted);font-size:.78rem;line-height:1.5;">Prova ad ampliare il raggio o modificare i filtri.</div></div>`;
     }
 
     if (lat && lng && raggio) {
@@ -319,115 +323,154 @@ function validateSearchDates() {
 
     users.forEach((u, i) => {
       const isSelf = parseInt(u.user_id) === parseInt(currentUserId);
-      const popup = `<div style="padding:.85rem 1rem;font-family:'Inter',sans-serif;min-width:190px;max-width:240px;">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:.5rem;">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
-        <div style="font-size:.8rem;color:#64748b;line-height:1.8;">
-          🌍 ${escHtml(u.nazionalita)} &nbsp;·&nbsp; 🗣 ${escHtml(u.lingua)}<br>
-          📍 ${escHtml(u.destinazione.substring(0,50))}…<br>
-          📅 ${u.data_inizio} → ${u.data_fine}
+      const popup = `<div style="font-family:'Inter',system-ui,sans-serif;min-width:200px;max-width:240px;padding:.1rem 0;">
+        <!-- header avatar + nome -->
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.7rem;">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2563eb 0%,#60a5fa 100%);color:#fff;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,.3);letter-spacing:.03em;">
+            ${u.nome[0]}${u.cognome[0]}
+          </div>
+          <div style="min-width:0;">
+            <div style="font-weight:700;font-size:.92rem;color:#111827;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
+            <div style="font-size:.72rem;color:#6b7280;margin-top:.1rem;">${escHtml(u.nazionalita)} · ${escHtml(u.lingua)}</div>
+          </div>
         </div>
-        <div style="margin-top: 1rem; display: flex; gap: .5rem; align-items: center;">
-          ${u.distanza_km ? `<div style="font-size:.75rem;font-weight:700;color:#2563eb;background:#eff6ff;padding:.2rem .55rem;border-radius:999px;display:inline-block;">📏 ${parseFloat(u.distanza_km).toFixed(1)} km</div>` : ''}
-          ${!isSelf ? `<a href="../chat/chat.php?user_id=${u.user_id}" style="text-decoration:none; background:var(--brand); color:white; padding: .4rem .8rem; border-radius: 6px; font-size: .8rem; font-weight: 600; flex: 1; text-align: center;">Contatta</a>` : '<span style="font-size:.75rem; color:var(--muted); font-style:italic; flex:1; text-align:center;">Tu</span>'}
+        <!-- destinazione -->
+        <div style="display:flex;align-items:center;gap:.35rem;background:#f8fafc;border:1px solid #e5e7eb;border-radius:7px;padding:.4rem .6rem;margin-bottom:.6rem;font-size:.78rem;font-weight:500;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg>
+          ${escHtml(u.destinazione)}
         </div>
+        <!-- date -->
+        <div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.75rem;">
+          <div style="flex:1;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;padding:.3rem .5rem;text-align:center;">
+            <div style="font-size:.58rem;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Dal</div>
+            <div style="font-size:.78rem;font-weight:700;color:#111827;">${formatDate(u.data_inizio)}</div>
+          </div>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <div style="flex:1;background:#f8fafc;border:1px solid #e5e7eb;border-radius:6px;padding:.3rem .5rem;text-align:center;">
+            <div style="font-size:.58rem;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;font-weight:700;">Al</div>
+            <div style="font-size:.78rem;font-weight:700;color:#111827;">${formatDate(u.data_fine)}</div>
+          </div>
+        </div>
+        <!-- CTA -->
+        ${isSelf
+          ? `<div style="text-align:center;font-size:.75rem;color:#9ca3af;font-style:italic;padding:.25rem 0;">Questo sei tu</div>`
+          : `<a href="../chat/chat.php?user_id=${u.user_id}"
+               style="display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%;padding:.55rem 1rem;background:#2563eb;color:#fff;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;box-shadow:0 3px 10px rgba(37,99,235,.35);transition:background .15s ease;font-family:inherit;"
+               onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Invia messaggio
+            </a>`}
       </div>`;
-      
-      const m = L.marker([parseFloat(u.latitudine), parseFloat(u.longitudine)], { icon: customIcon }).bindPopup(popup);
-      markersLayer.addLayer(m);
 
+      const marker = L.marker([+u.latitudine, +u.longitudine], { icon: customIcon })
+        .addTo(markersLayer)
+        .bindPopup(popup);
+
+      // Card in sidebar
       const card = document.createElement('div');
-      card.className = 'result-card';
-      card.style.animationDelay = (i * 0.04) + 's';
+      card.className = 'user-card';
       card.innerHTML = `
-        <div class="result-card-name">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
-        <div class="result-card-meta">
-          🌍 ${escHtml(u.nazionalita)} &nbsp;·&nbsp; 🗣 ${escHtml(u.lingua)}<br>
-          📅 ${u.data_inizio} → ${u.data_fine}
+        <div class="user-card-header">
+          <div class="user-avatar">${u.nome[0]}${u.cognome[0]}</div>
+          <div class="uc-info">
+            <div class="uc-name">${escHtml(u.nome)} ${escHtml(u.cognome)}</div>
+            <div class="uc-meta">${escHtml(u.nazionalita)} · ${escHtml(u.lingua)}</div>
+          </div>
         </div>
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: .5rem;">
-          ${u.distanza_km ? `<span class="result-card-dist" style="margin:0;">📏 ${parseFloat(u.distanza_km).toFixed(1)} km</span>` : '<span></span>'}
-          ${!isSelf ? `<a href="../chat/chat.php?user_id=${u.user_id}" class="btn btn-primary" style="padding: .3rem .7rem; font-size: .75rem; height: auto;">Contatta</a>` : '<span style="font-size:.75rem; color:var(--muted); font-style:italic;">Tu</span>'}
-        </div>`;
-      
-      card.addEventListener('click', () => {
-        map.setView([parseFloat(u.latitudine), parseFloat(u.longitudine)], 10);
-        m.openPopup();
-      });
+        ${u.distanza_km ? `<div class="user-dist">📍 ${u.distanza_km} km</div>` : '<div></div>'}
+        <div class="user-card-footer">
+          <div class="user-dest-box">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg>
+            ${escHtml(u.destinazione)}
+          </div>
+          <div class="user-dates">
+            <span>${formatDate(u.data_inizio)}</span>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <span>${formatDate(u.data_fine)}</span>
+          </div>
+          ${!isSelf
+            ? `<a href="../chat/chat.php?user_id=${u.user_id}" onclick="event.stopPropagation()" class="user-card-cta">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Scrivi
+              </a>`
+            : `<span class="user-self-badge">Tu</span>`}
+        </div>
+      `;
+      card.onclick = () => {
+        map.setView([+u.latitudine, +u.longitudine], 12);
+        marker.openPopup();
+      };
       list.appendChild(card);
     });
 
-    if (users.length > 0) {
-      const bounds = markersLayer.getLayers().map(l => l.getLatLng());
-      map.fitBounds(L.latLngBounds(bounds).pad(0.3));
+    if (users.length > 0 && lat && lng) {
+      // Non facciamo nulla, il cerchio già inquadra l'area
+    } else if (users.length > 0) {
+      const group = new L.featureGroup(markersLayer.getLayers());
+      map.fitBounds(group.getBounds().pad(0.1));
     }
   }
 
-  function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
   // ── Ricerche Recenti ──
-  function saveRecentSearch(search) {
-    let recent = JSON.parse(localStorage.getItem('recent_searches') || '[]');
-    // Rimuovi duplicati (stessa città e date)
-    recent = recent.filter(s => !(s.citta === search.citta && s.inizio === search.inizio && s.fine === search.fine));
-    recent.unshift(search);
-    recent = recent.slice(0, 5); // Tieni solo le ultime 5
-    localStorage.setItem('recent_searches', JSON.stringify(recent));
+  function saveRecentSearch(s) {
+    if (!s.citta) return;
+    let searches = JSON.parse(localStorage.getItem('recent_searches') || '[]');
+    // Rimuovi duplicati
+    searches = searches.filter(x => x.citta !== s.citta);
+    searches.unshift(s);
+    localStorage.setItem('recent_searches', JSON.stringify(searches.slice(0, 5)));
     renderRecentSearches();
   }
 
   function renderRecentSearches() {
-    const recent = JSON.parse(localStorage.getItem('recent_searches') || '[]');
-    const container = document.getElementById('recent-searches-section');
-    const list = document.getElementById('recent-searches-list');
-    
-    if (recent.length === 0) {
-      container.style.display = 'none';
-      return;
-    }
-
-    container.style.display = 'block';
-    list.innerHTML = '';
-    
-    recent.forEach(s => {
-      const chip = document.createElement('div');
-      chip.style.cssText = 'background:var(--surface); border:1px solid var(--border); padding:0.3rem 0.6rem; border-radius:999px; font-size:0.75rem; cursor:pointer; transition:all 0.2s;';
-      chip.innerHTML = `📍 ${escHtml(s.citta || 'Mappa')} (${s.inizio})`;
-      chip.onclick = () => applySearch(s);
-      chip.onmouseover = () => chip.style.borderColor = 'var(--brand)';
-      chip.onmouseout = () => chip.style.borderColor = 'var(--border)';
-      list.appendChild(chip);
+    const searches = JSON.parse(localStorage.getItem('recent_searches') || '[]');
+    const container = document.getElementById('recent-searches-list');
+    const section = document.getElementById('recent-searches-section');
+    if (!searches.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    container.innerHTML = '';
+    searches.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'recent-search-tag';
+      btn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> ${escHtml(s.citta)}`;
+      btn.onclick = () => {
+        document.getElementById('f-citta').value = s.citta;
+        document.getElementById('f-lat').value = s.lat;
+        document.getElementById('f-lng').value = s.lng;
+        document.getElementById('f-lingua').value = s.lingua;
+        document.getElementById('f-nazionalita').value = s.nazionalita;
+        document.getElementById('f-inizio').value = s.inizio;
+        document.getElementById('f-fine').value = s.fine;
+        document.getElementById('f-raggio').value = s.raggio;
+        document.getElementById('raggio-val').textContent = s.raggio;
+        geocodeCitta();
+        searchUsers();
+      };
+      container.appendChild(btn);
     });
   }
 
-  function applySearch(s) {
-    document.getElementById('f-lingua').value = s.lingua || '';
-    document.getElementById('f-nazionalita').value = s.nazionalita || '';
-    document.getElementById('f-inizio').value = s.inizio || '';
-    document.getElementById('f-fine').value = s.fine || '';
-    document.getElementById('f-lat').value = s.lat || '';
-    document.getElementById('f-lng').value = s.lng || '';
-    document.getElementById('f-raggio').value = s.raggio || 10;
-    document.getElementById('raggio-val').textContent = s.raggio || 10;
-    document.getElementById('f-citta').value = s.citta || '';
-    
-    if (s.citta) {
-      const d = document.getElementById('citta-display');
-      d.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg> ${escHtml(s.citta)}`;
-      d.style.display = 'flex';
-    }
-    
-    searchUsers();
+  // ── Utility ──
+  function escHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function formatDate(d) {
+    if (!d) return '';
+    const parts = d.split('-');
+    return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`;
+  }
+  function showToast(msg, type='info') {
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
   }
 
-  // Inizializza ricerche recenti al caricamento
-  document.addEventListener('DOMContentLoaded', renderRecentSearches);
+  renderRecentSearches();
 </script>
-<style>
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-</style>
-<script src="../../shared/app.js"></script>
 </body>
 </html>

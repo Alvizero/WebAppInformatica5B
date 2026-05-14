@@ -9,32 +9,42 @@ if (isLoggedIn()) {
     exit;
 }
 
+$pdo = getPDO();
 $errors  = [];
 $success = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome        = trim($_POST['nome']        ?? '');
-    $cognome     = trim($_POST['cognome']     ?? '');
-    $email       = trim($_POST['email']       ?? '');
-    $password    = $_POST['password']         ?? '';
-    $password2   = $_POST['password2']        ?? '';
-    $countries   = require __DIR__ . '/../../shared/countries.php';
-    $nazionalita = trim($_POST['nazionalita'] ?? '');
-    if (!empty($nazionalita) && !in_array($nazionalita, $countries)) {
-        $errors[] = 'Nazionalità non valida.';
-    }
-    $lingua      = trim($_POST['lingua']      ?? '');
+// Carichiamo tutte le nazionalità dal database
+$stmtNaz = $pdo->query('SELECT id, nome FROM nazionalita ORDER BY nome ASC');
+$allNazionalita = $stmtNaz->fetchAll(PDO::FETCH_ASSOC);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome           = trim($_POST['nome']           ?? '');
+    $cognome        = trim($_POST['cognome']        ?? '');
+    $email          = trim($_POST['email']          ?? '');
+    $password       = $_POST['password']            ?? '';
+    $password2      = $_POST['password2']           ?? '';
+    $nazionalita_id = (int)($_POST['nazionalita_id'] ?? 0);
+    $lingua         = trim($_POST['lingua']         ?? '');
+
+    // Validazione nazionalità
+    $nazExists = false;
+    foreach ($allNazionalita as $naz) {
+        if ((int)$naz['id'] === $nazionalita_id) {
+            $nazExists = true;
+            break;
+        }
+    }
+
+    if (!$nazExists)                                        $errors[] = 'Nazionalità non valida.';
     if (empty($nome))                                       $errors[] = 'Nome obbligatorio.';
     if (empty($cognome))                                    $errors[] = 'Cognome obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL))         $errors[] = 'Email non valida.';
     if (strlen($password) < 8)                              $errors[] = 'Password minimo 8 caratteri.';
     if ($password !== $password2)                           $errors[] = 'Le password non coincidono.';
-    if (empty($nazionalita))                                $errors[] = 'Nazionalità obbligatoria.';
+    if (empty($nazionalita_id))                             $errors[] = 'Nazionalità obbligatoria.';
     if (empty($lingua))                                     $errors[] = 'Lingua obbligatoria.';
 
     if (empty($errors)) {
-        $pdo = getPDO();
         $chk = $pdo->prepare('SELECT id FROM users WHERE email = :email');
         $chk->execute([':email' => $email]);
         if ($chk->fetch()) {
@@ -42,16 +52,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hash = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $pdo->prepare(
-                'INSERT INTO users (nome, cognome, email, password, nazionalita, lingua)
-                 VALUES (:nome, :cognome, :email, :password, :nazionalita, :lingua)'
+                'INSERT INTO users (nome, cognome, email, password, nazionalita_id, lingua)
+                 VALUES (:nome, :cognome, :email, :password, :nazionalita_id, :lingua)'
             );
             $stmt->execute([
-                ':nome'        => $nome,
-                ':cognome'     => $cognome,
-                ':email'       => $email,
-                ':password'    => $hash,
-                ':nazionalita' => $nazionalita,
-                ':lingua'      => $lingua,
+                ':nome'           => $nome,
+                ':cognome'        => $cognome,
+                ':email'          => $email,
+                ':password'       => $hash,
+                ':nazionalita_id' => $nazionalita_id,
+                ':lingua'         => $lingua,
             ]);
             $success = true;
         }
@@ -141,13 +151,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div>
               <div class="input-wrap">
                 <label>Nazionalità *</label>
-                <select name="nazionalita" required class="form-select">
+                <select name="nazionalita_id" required class="form-select">
                   <option value="">Seleziona...</option>
-                  <?php 
-                  $countries = require __DIR__ . '/../../shared/countries.php';
-                  foreach ($countries as $c): ?>
-                    <option value="<?= htmlspecialchars($c) ?>" <?= (($_POST['nazionalita'] ?? '') === $c) ? 'selected' : '' ?>>
-                      <?= htmlspecialchars($c) ?>
+                  <?php foreach ($allNazionalita as $naz): ?>
+                    <option value="<?= (int)$naz['id'] ?>" <?= ((int)($_POST['nazionalita_id'] ?? 0) === (int)$naz['id']) ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($naz['nome']) ?>
                     </option>
                   <?php endforeach; ?>
                 </select>

@@ -7,7 +7,13 @@ requireLogin();
 $user = currentUser();
 $pdo  = getPDO();
 
-$stmt = $pdo->prepare('SELECT nome, cognome, email, nazionalita, lingua FROM users WHERE id = ?');
+// Recuperiamo i dati dell'utente includendo il nome della nazionalità tramite JOIN
+$stmt = $pdo->prepare('
+    SELECT u.nome, u.cognome, u.email, u.nazionalita_id, n.nome as nazionalita_nome, u.lingua 
+    FROM users u 
+    LEFT JOIN nazionalita n ON u.nazionalita_id = n.id 
+    WHERE u.id = ?
+');
 $stmt->execute([$user['id']]);
 $dbUser = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$dbUser) die('Errore: utente non trovato.');
@@ -15,21 +21,33 @@ if (!$dbUser) die('Errore: utente non trovato.');
 $errors  = [];
 $success = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome        = trim($_POST['nome']        ?? '');
-    $cognome     = trim($_POST['cognome']     ?? '');
-    $email       = trim($_POST['email']       ?? '');
-    $countries   = require __DIR__ . '/../../shared/countries.php';
-    $nazionalita = trim($_POST['nazionalita'] ?? '');
-    if (!empty($nazionalita) && !in_array($nazionalita, $countries)) {
-        $errors[] = 'Nazionalità non valida.';
-    }
-    $lingua      = trim($_POST['lingua']      ?? '');
+// Carichiamo tutte le nazionalità dal database per il select e la validazione
+$stmtNaz = $pdo->query('SELECT id, nome FROM nazionalita ORDER BY nome ASC');
+$allNazionalita = $stmtNaz->fetchAll(PDO::FETCH_ASSOC);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome           = trim($_POST['nome']           ?? '');
+    $cognome        = trim($_POST['cognome']        ?? '');
+    $email          = trim($_POST['email']          ?? '');
+    $nazionalita_id = (int)($_POST['nazionalita_id'] ?? 0);
+    $lingua         = trim($_POST['lingua']         ?? '');
+
+    // Validazione nazionalità
+    $nazExists = false;
+    $selectedNazNome = '';
+    foreach ($allNazionalita as $naz) {
+        if ((int)$naz['id'] === $nazionalita_id) {
+            $nazExists = true;
+            $selectedNazNome = $naz['nome'];
+            break;
+        }
+    }
+
+    if (!$nazExists)                                $errors[] = 'Nazionalità non valida.';
     if (empty($nome))                               $errors[] = 'Il nome è obbligatorio.';
     if (empty($cognome))                            $errors[] = 'Il cognome è obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Inserisci un indirizzo email valido.';
-    if (empty($nazionalita))                        $errors[] = 'La nazionalità è obbligatoria.';
+    if (empty($nazionalita_id))                     $errors[] = 'La nazionalità è obbligatoria.';
     if (empty($lingua))                             $errors[] = 'La lingua principale è obbligatoria.';
 
     if (empty($errors)) {
@@ -38,12 +56,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) {
             $errors[] = 'Questo indirizzo email è già in uso da un altro account.';
         } else {
-            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita=?, lingua=? WHERE id=?');
-            $upd->execute([$nome, $cognome, $email, $nazionalita, $lingua, $user['id']]);
+            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita_id=?, lingua=? WHERE id=?');
+            $upd->execute([$nome, $cognome, $email, $nazionalita_id, $lingua, $user['id']]);
+            
+            // Aggiorniamo la sessione
             $_SESSION['user_nome']    = $nome;
             $_SESSION['user_cognome'] = $cognome;
-            $_SESSION['user_naz']     = $nazionalita;
+            $_SESSION['user_naz']     = $selectedNazNome; // Salviamo il nome per la visualizzazione rapida
             $_SESSION['user_lingua']  = $lingua;
+            
             header('Location: profilo.php?success_msg=' . urlencode('Profilo aggiornato con successo!'));
             exit;
         }
@@ -107,21 +128,19 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
             <input type="email" name="email" required value="<?= htmlspecialchars($dbUser['email'] ?? '') ?>" placeholder="nome@esempio.com">
           </div>
         </div>
-<div>
-	          <div class="input-wrap">
-	            <label>Nazionalità *</label>
-	            <select name="nazionalita" required class="form-select">
-	              <option value="">Seleziona...</option>
-	              <?php 
-	              $countries = require __DIR__ . '/../../shared/countries.php';
-	              foreach ($countries as $c): ?>
-	                <option value="<?= htmlspecialchars($c) ?>" <?= (($dbUser['nazionalita'] ?? '') === $c) ? 'selected' : '' ?>>
-	                  <?= htmlspecialchars($c) ?>
-	                </option>
-	              <?php endforeach; ?>
-	            </select>
-	          </div>
-	        </div>
+        <div>
+          <div class="input-wrap">
+            <label>Nazionalità *</label>
+            <select name="nazionalita_id" required class="form-select">
+              <option value="">Seleziona...</option>
+              <?php foreach ($allNazionalita as $naz): ?>
+                <option value="<?= (int)$naz['id'] ?>" <?= ((int)($dbUser['nazionalita_id'] ?? 0) === (int)$naz['id']) ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($naz['nome']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        </div>
         <div>
           <div class="input-wrap">
             <label>Lingua principale *</label>

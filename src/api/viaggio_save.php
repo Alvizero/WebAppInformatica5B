@@ -14,16 +14,9 @@ $lng    = filter_input(INPUT_POST, 'longitudine', FILTER_VALIDATE_FLOAT);
 $inizio = $_POST['data_inizio'] ?? '';
 $fine   = $_POST['data_fine']   ?? '';
 
-$today = date('Y-m-d');
-	if (!$dest || $lat === false || $lng === false || !$inizio || !$fine || $fine < $inizio || $inizio < $today) {
-	    $errorMsg = 'Dati non validi o date non corrette.';
-	    if ($inizio < $today) {
-	        $errorMsg = 'La data di inizio non può essere nel passato.';
-	    } elseif ($fine < $inizio) {
-	        $errorMsg = 'La data di fine non può essere precedente alla data di inizio.';
-	    }
-	    redirect('../pages/dashboard/dashboard.php', null, $errorMsg);
-	}
+if (!$dest || $lat === false || $lng === false || !$inizio || !$fine || $fine < $inizio) {
+    redirect('../pages/dashboard/dashboard.php', null, 'Dati non validi o date non corrette.');
+}
 
 $params = ['uid'=>$user['id'], 'dest'=>$dest, 'lat'=>$lat, 'lng'=>$lng, 'inizio'=>$inizio, 'fine'=>$fine];
 

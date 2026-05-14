@@ -4,13 +4,13 @@ require_once __DIR__ . '/../shared/db_config.php';
 require_once __DIR__ . '/../shared/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
-$lingua      = trim($_GET['lingua']      ?? '');
-$nazionalita = trim($_GET['nazionalita'] ?? '');
-$inizio      = $_GET['data_inizio'] ?? '';
-$fine        = $_GET['data_fine']   ?? '';
-$lat         = filter_input(INPUT_GET, 'lat',    FILTER_VALIDATE_FLOAT);
-$lng         = filter_input(INPUT_GET, 'lng',    FILTER_VALIDATE_FLOAT);
-$raggio      = filter_input(INPUT_GET, 'raggio', FILTER_VALIDATE_INT);
+$lingua         = trim($_GET['lingua']         ?? '');
+$nazionalita_id = (int)($_GET['nazionalita']   ?? 0); // Ora riceviamo l'ID
+$inizio         = $_GET['data_inizio'] ?? '';
+$fine           = $_GET['data_fine']   ?? '';
+$lat            = filter_input(INPUT_GET, 'lat',    FILTER_VALIDATE_FLOAT);
+$lng            = filter_input(INPUT_GET, 'lng',    FILTER_VALIDATE_FLOAT);
+$raggio         = filter_input(INPUT_GET, 'raggio', FILTER_VALIDATE_INT);
 
 $pdo = getPDO();
 $current_uid = currentUser()['id'];
@@ -35,12 +35,14 @@ if ($lat !== false && $lng !== false && $raggio) {
     $params['lat2'] = $lat;
 }
 
-$sql = "SELECT u.id AS user_id, u.nome, u.cognome, u.nazionalita, u.lingua,
+// JOIN con nazionalita per ottenere il nome testuale da restituire al frontend
+$sql = "SELECT u.id AS user_id, u.nome, u.cognome, n.nome as nazionalita, u.lingua,
                v.destinazione, v.latitudine, v.longitudine,
                v.data_inizio, v.data_fine,
                {$distCol} AS distanza_km
         FROM viaggi v
         JOIN users u ON u.id = v.user_id
+        LEFT JOIN nazionalita n ON u.nazionalita_id = n.id
         WHERE v.data_inizio <= :fine
           AND v.data_fine   >= :inizio
           AND v.user_id != :current_user_id";
@@ -49,9 +51,9 @@ if (!empty($lingua)) {
     $sql .= " AND u.lingua = :lingua";
     $params['lingua'] = $lingua;
 }
-if (!empty($nazionalita)) {
-    $sql .= " AND u.nazionalita = :nazionalita";
-    $params['nazionalita'] = $nazionalita;
+if (!empty($nazionalita_id)) {
+    $sql .= " AND u.nazionalita_id = :nazionalita_id";
+    $params['nazionalita_id'] = $nazionalita_id;
 }
 
 if ($lat !== false && $lng !== false && $raggio) {

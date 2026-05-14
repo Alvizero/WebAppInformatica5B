@@ -58,22 +58,19 @@ if (isset($_GET['edit'])) {
         <?php endif; ?>
       </h3>
 
-      <form method="POST" action="./../../api/viaggio_save.php" id="vForm" onsubmit="return validateTripForm(event)">
+      <form method="POST" action="./../../api/viaggio_save.php" id="vForm">
         <?php if ($edit): ?>
           <input type="hidden" name="id" value="<?= $edit['id'] ?>">
         <?php endif; ?>
 
-<?php $today = date('Y-m-d'); ?>
-<div class="input-wrap">
-		          <label>Data inizio *</label>
-		          <input type="date" name="data_inizio" id="data_inizio" required min="<?= $today ?>" value="<?= htmlspecialchars($edit['data_inizio'] ?? '') ?>" oninput="validateDates()">
-		          <div id="error-inizio" class="inline-error" style="display:none; color:var(--error); font-size:0.75rem; margin-top:0.25rem; font-weight:600;">La data deve essere odierna o successiva.</div>
-		        </div>
-		        <div class="input-wrap">
-		          <label>Data fine *</label>
-		          <input type="date" name="data_fine" id="data_fine" required min="<?= $today ?>" value="<?= htmlspecialchars($edit['data_fine'] ?? '') ?>" oninput="validateDates()">
-		          <div id="error-fine" class="inline-error" style="display:none; color:var(--error); font-size:0.75rem; margin-top:0.25rem; font-weight:600;">La data deve essere successiva o uguale alla data di inizio.</div>
-		        </div>
+        <div class="input-wrap">
+          <label>Data inizio *</label>
+          <input type="date" name="data_inizio" required value="<?= htmlspecialchars($edit['data_inizio'] ?? '') ?>">
+        </div>
+        <div class="input-wrap">
+          <label>Data fine *</label>
+          <input type="date" name="data_fine" required value="<?= htmlspecialchars($edit['data_fine'] ?? '') ?>">
+        </div>
 
         <div class="input-wrap">
           <label>Destinazione (Città, Hotel, ecc.) *</label>
@@ -207,50 +204,8 @@ if (isset($_GET['edit'])) {
   const preLat  = "<?= htmlspecialchars($edit['latitudine']   ?? '') ?>";
   const preLng  = "<?= htmlspecialchars($edit['longitudine']  ?? '') ?>";
   const preDest = "<?= htmlspecialchars($edit['destinazione'] ?? '') ?>";
-if (preLat && preLng) { map.setView([+preLat, +preLng], 8); setMarker(+preLat, +preLng, preDest); }
-	
-function validateDates() {
-		    const inizioInput = document.getElementById('data_inizio');
-		    const fineInput   = document.getElementById('data_fine');
-		    const errInizio   = document.getElementById('error-inizio');
-		    const errFine     = document.getElementById('error-fine');
-		    const today       = new Date().toISOString().split('T')[0];
-		    
-		    let isValid = true;
-		
-		    if (inizioInput.value && inizioInput.value < today) {
-		      errInizio.style.display = 'block';
-		      inizioInput.style.borderColor = 'var(--error)';
-		      isValid = false;
-		    } else {
-		      errInizio.style.display = 'none';
-		      inizioInput.style.borderColor = '';
-		    }
-		
-		    if (fineInput.value && inizioInput.value && fineInput.value < inizioInput.value) {
-		      errFine.style.display = 'block';
-		      fineInput.style.borderColor = 'var(--error)';
-		      isValid = false;
-		    } else {
-		      errFine.style.display = 'none';
-		      fineInput.style.borderColor = '';
-		    }
-		
-		    return isValid;
-		  }
-		
-		  function validateTripForm(e) {
-		    const dest = document.getElementById('destinazione').value;
-		    const datesValid = validateDates();
-		
-		    if (!dest) {
-		      showToast('Seleziona una destinazione sulla mappa.', 'warning');
-		      return false;
-		    }
-		
-		    return datesValid;
-		  }
-	</script>
+  if (preLat && preLng) { map.setView([+preLat, +preLng], 8); setMarker(+preLat, +preLng, preDest); }
+</script>
 <script src="../../shared/app.js"></script>
 </body>
 </html>

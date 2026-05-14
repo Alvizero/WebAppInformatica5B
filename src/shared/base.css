@@ -585,26 +585,18 @@ input[type="email"],
 input[type="password"],
 input[type="date"],
 select,
-	textarea {
-	  width: 100%;
-	  padding: .7rem 1rem;
-	  font-family: 'Inter', sans-serif;
-	  font-size: .95rem;
-	  background: var(--surface);
-	  border: 1.5px solid var(--border-2);
-	  border-radius: var(--radius);
-	  color: var(--ink);
-	  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
-	  appearance: none;
-	}
-	
-	select {
-	  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-	  background-repeat: no-repeat;
-	  background-position: right 0.75rem center;
-	  background-size: 1rem;
-	  padding-right: 2.5rem;
-	}
+textarea {
+  width: 100%;
+  padding: .7rem 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: .95rem;
+  background: var(--surface);
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--radius);
+  color: var(--ink);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  appearance: none;
+}
 
 input:focus, select:focus, textarea:focus {
   outline: none;

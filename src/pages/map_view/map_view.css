@@ -242,24 +242,242 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 .btn-search-main:active { transform: translateY(0); }
 
-/* ── Results ── */
+/* ── Results Count ── */
 .results-count {
-  margin-top: .9rem;
-  font-size: .82rem;
-  font-weight: 600;
-  color: var(--muted);
+  margin: .9rem 0 .6rem;
   text-align: center;
   min-height: 1.2rem;
   animation: fadeIn .3s ease;
 }
 
+/* ── Results List ── */
 #results-list {
-  margin-top: .7rem;
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: .55rem;
 }
 
+/* ════════════════════════════════════════
+   USER CARD — layout a due colonne:
+   [avatar+info] [bottone scrivi]
+   ════════════════════════════════════════ */
+.user-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  padding: .9rem 1rem;
+  cursor: pointer;
+  transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  animation: fadeUp .22s ease both;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: .75rem;
+  row-gap: .5rem;
+  align-items: start;
+}
+
+/* accent bar sinistra */
+.user-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10%; bottom: 10%;
+  width: 3px;
+  background: linear-gradient(180deg, var(--brand) 0%, var(--brand-light,#60a5fa) 100%);
+  border-radius: 0 3px 3px 0;
+  opacity: 0;
+  transition: opacity .18s ease, top .18s ease, bottom .18s ease;
+}
+
+.user-card:hover {
+  border-color: rgba(37,99,235,.28);
+  box-shadow: 0 2px 16px rgba(37,99,235,.09), 0 1px 4px rgba(0,0,0,.04);
+  background: #fafbff;
+}
+.user-card:hover::before {
+  opacity: 1;
+  top: 0; bottom: 0;
+}
+
+/* ── Colonna sinistra: avatar + testo ── */
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand) 0%, #60a5fa 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: .78rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: .04em;
+  box-shadow: 0 2px 8px rgba(37,99,235,.22);
+  position: relative;
+}
+
+/* anello esterno avatar al hover */
+.user-card:hover .user-avatar {
+  box-shadow: 0 0 0 3px rgba(37,99,235,.15), 0 2px 8px rgba(37,99,235,.22);
+}
+
+.uc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.uc-name {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  margin-bottom: .15rem;
+}
+
+.uc-meta {
+  font-size: .72rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex-wrap: wrap;
+}
+
+/* separatore punto */
+.uc-meta::before { display: none; }
+
+/* ── Colonna destra: badge distanza ── */
+.user-dist {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  flex-shrink: 0;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--brand);
+  background: rgba(37,99,235,.08);
+  padding: .18rem .5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(37,99,235,.18);
+  white-space: nowrap;
+  margin-top: .1rem;
+}
+
+/* ── Riga inferiore: destinazione + date + CTA ── */
+.user-card-footer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  flex-wrap: wrap;
+}
+
+/* ── Destinazione ── */
+.user-dest-box {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .32rem .6rem;
+  font-size: .76rem;
+  font-weight: 500;
+  color: var(--ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.user-dest-box svg { color: var(--brand); flex-shrink: 0; }
+
+/* ── Date ── */
+.user-dates {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.user-dates span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: .22rem .48rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-size: .7rem;
+  letter-spacing: .01em;
+}
+.user-dates svg { color: var(--muted); flex-shrink: 0; }
+
+/* ── CTA Scrivi ── */
+.user-card-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .32rem .7rem;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 999px;
+  font-size: .73rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .15s ease, box-shadow .15s ease, transform .12s ease;
+  box-shadow: 0 2px 8px rgba(37,99,235,.3);
+  line-height: 1;
+}
+.user-card-cta:hover {
+  background: var(--brand-dark, #1d4ed8);
+  box-shadow: 0 4px 14px rgba(37,99,235,.4);
+  transform: translateY(-1px);
+}
+.user-card-cta:active { transform: translateY(0); }
+
+/* badge "Tu" per l'utente corrente */
+.user-self-badge {
+  font-size: .68rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: .22rem .5rem;
+  background: var(--surface);
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+/* ── Animazione stagger ── */
+#results-list .user-card:nth-child(1)  { animation-delay: .03s; }
+#results-list .user-card:nth-child(2)  { animation-delay: .07s; }
+#results-list .user-card:nth-child(3)  { animation-delay: .11s; }
+#results-list .user-card:nth-child(4)  { animation-delay: .15s; }
+#results-list .user-card:nth-child(5)  { animation-delay: .18s; }
+#results-list .user-card:nth-child(n+6){ animation-delay: .21s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Result card alias retro-compat ── */
 .result-card {
   background: var(--surface);
   border: 1.5px solid var(--border);
@@ -275,33 +493,50 @@ input[type="range"]::-webkit-slider-thumb:hover {
   box-shadow: var(--shadow);
   transform: translateX(3px);
 }
-
-.result-card-name {
-  font-size: .9rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: .3rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-.result-card-meta {
-  font-size: .78rem;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
+.result-card-name { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .3rem; }
+.result-card-meta { font-size: .78rem; color: var(--muted); line-height: 1.6; }
 .result-card-dist {
+  display: inline-flex; align-items: center; gap: .25rem;
+  margin-top: .45rem; font-size: .75rem; font-weight: 700;
+  color: var(--brand); background: var(--info-bg);
+  padding: .2rem .55rem; border-radius: 999px;
+  border: 1px solid rgba(37,99,235,.2);
+}
+
+/* ── Package Card ── */
+.package-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: box-shadow .18s ease, border-color .18s ease;
+  animation: fadeUp .25s ease both;
+}
+.package-card:hover {
+  box-shadow: 0 4px 20px rgba(37,99,235,.1);
+  border-color: rgba(37,99,235,.25);
+}
+
+/* ── Recent Search Tags ── */
+.recent-search-tag {
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
-  margin-top: .45rem;
-  font-size: .75rem;
-  font-weight: 700;
+  gap: .3rem;
+  font-size: .74rem;
+  font-weight: 600;
   color: var(--brand);
   background: var(--info-bg);
-  padding: .2rem .55rem;
-  border-radius: 999px;
   border: 1px solid rgba(37,99,235,.2);
+  border-radius: 999px;
+  padding: .25rem .65rem;
+  cursor: pointer;
+  transition: all .15s ease;
+  font-family: inherit;
+}
+.recent-search-tag:hover {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
 }
 
 /* ── Map ── */
@@ -327,4 +562,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
     height: 50vh;
     min-height: 300px;
   }
+}
+
+/* ── Dark mode fix per user-card ── */
+:root.dark-mode .user-card:hover {
+  background: var(--surface-2);
+}
+:root.dark-mode .user-card-cta {
+  background: var(--brand);
+}
+:root.dark-mode .user-card-cta:hover {
+  background: var(--brand-dark);
 }

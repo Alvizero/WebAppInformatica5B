@@ -18,11 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if ($email && $password) {
     $pdo  = getPDO();
-    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email');
+    // JOIN con nazionalita per avere il nome in sessione
+    $stmt = $pdo->prepare('
+        SELECT u.*, n.nome as nazionalita_nome 
+        FROM users u 
+        LEFT JOIN nazionalita n ON u.nazionalita_id = n.id 
+        WHERE u.email = :email
+    ');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
     if ($user && password_verify($password, $user['password'])) {
-      loginUser($user);
+      // Prepariamo l'array per loginUser includendo il nome della nazionalità
+      $userData = $user;
+      $userData['nazionalita'] = $user['nazionalita_nome'] ?? '';
+      loginUser($userData);
       header('Location: ' . $redirect);
       exit;
     }
