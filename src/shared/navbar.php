@@ -8,7 +8,7 @@ startSession();
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/>
     </svg>
-    VacanzaMatch
+    FrienTrip
   </a>
 
   <button class="nav-toggle" type="button" onclick="toggleMenu()" aria-label="Menu">

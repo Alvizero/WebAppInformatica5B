@@ -52,8 +52,7 @@ function adminLevelLabel(int $level): string {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        $redirect = urlencode($_SERVER['REQUEST_URI']);
-        header('Location: ./src/pages/login/login.php?redirect=' . $redirect);
+        header('Location: /informatica/sitofunziona/src/pages/login/login.php');
         exit;
     }
 }

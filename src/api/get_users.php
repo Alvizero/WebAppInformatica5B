@@ -4,7 +4,7 @@ require_once __DIR__ . '/../shared/db_config.php';
 require_once __DIR__ . '/../shared/auth.php';
 header('Content-Type: application/json; charset=utf-8');
 
-$lingua         = trim($_GET['lingua']         ?? '');
+$lingua_id      = (int)($_GET['lingua_id']     ?? 0);
 $nazionalita_id = (int)($_GET['nazionalita']   ?? 0); // Ora riceviamo l'ID
 $inizio         = $_GET['data_inizio'] ?? '';
 $fine           = $_GET['data_fine']   ?? '';
@@ -36,20 +36,21 @@ if ($lat !== false && $lng !== false && $raggio) {
 }
 
 // JOIN con nazionalita per ottenere il nome testuale da restituire al frontend
-$sql = "SELECT u.id AS user_id, u.nome, u.cognome, n.nome as nazionalita, u.lingua,
+$sql = "SELECT u.id AS user_id, u.nome, u.cognome, n.nome as nazionalita, l.nome as lingua,
                v.destinazione, v.latitudine, v.longitudine,
                v.data_inizio, v.data_fine,
                {$distCol} AS distanza_km
         FROM viaggi v
         JOIN users u ON u.id = v.user_id
         LEFT JOIN nazionalita n ON u.nazionalita_id = n.id
+        LEFT JOIN lingue l ON u.lingua_id = l.id
         WHERE v.data_inizio <= :fine
           AND v.data_fine   >= :inizio
           AND v.user_id != :current_user_id";
 
-if (!empty($lingua)) {
-    $sql .= " AND u.lingua = :lingua";
-    $params['lingua'] = $lingua;
+if (!empty($lingua_id)) {
+    $sql .= " AND u.lingua_id = :lingua_id";
+    $params['lingua_id'] = $lingua_id;
 }
 if (!empty($nazionalita_id)) {
     $sql .= " AND u.nazionalita_id = :nazionalita_id";

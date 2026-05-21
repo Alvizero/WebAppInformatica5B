@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../shared/auth.php';
 require_once __DIR__ . '/../../shared/db_config.php';
+require_once __DIR__ . '/../../shared/lingue_list.php';
 requireLogin();
 
 if (isAgency()) {
@@ -18,7 +19,7 @@ $allNazionalita = $stmtNaz->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cerca compagni di viaggio — VacanzaMatch</title>
+  <title>Cerca compagni di viaggio — FrienTrip</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -46,7 +47,12 @@ $allNazionalita = $stmtNaz->fetchAll(PDO::FETCH_ASSOC);
 
       <div class="filter-section">
         <label class="filter-label">Lingua parlata <span style="font-size:.7rem;color:var(--muted);">opzionale</span></label>
-        <input type="text" id="f-lingua" placeholder="es. Italiano, English…">
+        <select id="f-lingua" class="form-select">
+          <option value="">Tutte le lingue</option>
+          <?php foreach (getAllLingue($pdo) as $l): ?>
+            <option value="<?= (int)$l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
 
       <div class="filter-section">
@@ -205,7 +211,7 @@ function validateSearchDates() {
   }
 
   async function searchUsers() {
-    const lingua      = document.getElementById('f-lingua').value.trim();
+    const lingua_id   = document.getElementById('f-lingua').value;
     const nazionalita = document.getElementById('f-nazionalita').value.trim();
     const inizio      = document.getElementById('f-inizio').value;
     const fine        = document.getElementById('f-fine').value;
@@ -222,13 +228,13 @@ function validateSearchDates() {
     if (!validateSearchDates()) return;
 
     // Salva ricerca recente
-    saveRecentSearch({ lingua, nazionalita, inizio, fine, lat, lng, raggio, citta });
+    saveRecentSearch({ lingua_id, nazionalita, inizio, fine, lat, lng, raggio, citta });
 
     const btn = document.querySelector('.btn-search-main');
     btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg> Ricerca in corso…`;
     btn.disabled = true;
 
-    const params = new URLSearchParams({ lingua, nazionalita, data_inizio: inizio, data_fine: fine, citta });
+    const params = new URLSearchParams({ lingua_id, nazionalita, data_inizio: inizio, data_fine: fine, citta });
     if (lat && lng) { params.append('lat', lat); params.append('lng', lng); params.append('raggio', raggio); }
 
     try {
@@ -437,7 +443,7 @@ function validateSearchDates() {
         document.getElementById('f-citta').value = s.citta;
         document.getElementById('f-lat').value = s.lat;
         document.getElementById('f-lng').value = s.lng;
-        document.getElementById('f-lingua').value = s.lingua;
+        document.getElementById('f-lingua').value = s.lingua_id || '';
         document.getElementById('f-nazionalita').value = s.nazionalita;
         document.getElementById('f-inizio').value = s.inizio;
         document.getElementById('f-fine').value = s.fine;
@@ -472,5 +478,6 @@ function validateSearchDates() {
 
   renderRecentSearches();
 </script>
+<script src="../../shared/app.js"></script>
 </body>
 </html>

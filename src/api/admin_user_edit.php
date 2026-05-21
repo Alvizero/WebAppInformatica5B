@@ -15,20 +15,20 @@ $nome           = trim($_POST['nome'] ?? '');
 $cognome        = trim($_POST['cognome'] ?? '');
 $email          = trim($_POST['email'] ?? '');
 $nazionalita_id = (int)($_POST['nazionalita_id'] ?? 0);
-$lingua         = trim($_POST['lingua'] ?? '');
+$lingua_id      = (int)($_POST['lingua_id'] ?? 1);
 
 if (!$nome || !$cognome || !$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     setFlash('reset_error', '❌ Dati non validi o email mancante.');
     redirect('../pages/admin/admin.php');
 }
 
-getPDO()->prepare("UPDATE users SET nome=:nome, cognome=:cognome, email=:email, nazionalita_id=:naz_id, lingua=:lingua WHERE id=:id")
+getPDO()->prepare("UPDATE users SET nome=:nome, cognome=:cognome, email=:email, nazionalita_id=:naz_id, lingua_id=:lingua_id WHERE id=:id")
     ->execute([
         'nome'    => $nome,
         'cognome' => $cognome,
         'email'   => $email,
         'naz_id'  => $nazionalita_id,
-        'lingua'  => $lingua,
+        'lingua_id' => $lingua_id,
         'id'      => $user_id,
     ]);
 

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
+require_once __DIR__ . '/../../shared/lingue_list.php';
 startSession();
 
 if (isLoggedIn()) {
@@ -24,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password       = $_POST['password']            ?? '';
     $password2      = $_POST['password2']           ?? '';
     $nazionalita_id = (int)($_POST['nazionalita_id'] ?? 0);
-    $lingua         = trim($_POST['lingua']         ?? '');
+    $lingua_id      = (int)($_POST['lingua_id']      ?? 0);
 
     // Validazione nazionalità
     $nazExists = false;
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (strlen($password) < 8)                              $errors[] = 'Password minimo 8 caratteri.';
     if ($password !== $password2)                           $errors[] = 'Le password non coincidono.';
     if (empty($nazionalita_id))                             $errors[] = 'Nazionalità obbligatoria.';
-    if (empty($lingua))                                     $errors[] = 'Lingua obbligatoria.';
+    if (empty($lingua_id))                                  $errors[] = 'Lingua obbligatoria.';
 
     if (empty($errors)) {
         $chk = $pdo->prepare('SELECT id FROM users WHERE email = :email');
@@ -52,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $hash = password_hash($password, PASSWORD_BCRYPT);
             $stmt = $pdo->prepare(
-                'INSERT INTO users (nome, cognome, email, password, nazionalita_id, lingua)
-                 VALUES (:nome, :cognome, :email, :password, :nazionalita_id, :lingua)'
+                'INSERT INTO users (nome, cognome, email, password, nazionalita_id, lingua_id)
+                 VALUES (:nome, :cognome, :email, :password, :nazionalita_id, :lingua_id)'
             );
             $stmt->execute([
                 ':nome'           => $nome,
@@ -61,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':email'          => $email,
                 ':password'       => $hash,
                 ':nazionalita_id' => $nazionalita_id,
-                ':lingua'         => $lingua,
+                ':lingua_id'      => $lingua_id,
             ]);
             $success = true;
         }
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrati — VacanzaMatch</title>
+  <title>Registrati — FrienTrip</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../../shared/base.css">
@@ -164,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div>
               <div class="input-wrap">
                 <label>Lingua principale *</label>
-                <input type="text" name="lingua" required value="<?= htmlspecialchars($_POST['lingua'] ?? '') ?>" placeholder="Italiano">
+                <?= lingueSelectHtml($pdo, 'lingua_id', (int)($_POST['lingua_id'] ?? 0)) ?>
               </div>
             </div>
           </div>

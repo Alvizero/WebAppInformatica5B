@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../../shared/db_config.php';
 require_once __DIR__ . '/../../shared/auth.php';
+require_once __DIR__ . '/../../shared/lingue_list.php';
 
 requireLogin();
 $user = currentUser();
@@ -9,9 +10,10 @@ $pdo  = getPDO();
 
 // Recuperiamo i dati dell'utente includendo il nome della nazionalità tramite JOIN
 $stmt = $pdo->prepare('
-    SELECT u.nome, u.cognome, u.email, u.nazionalita_id, n.nome as nazionalita_nome, u.lingua 
+    SELECT u.nome, u.cognome, u.email, u.nazionalita_id, n.nome as nazionalita_nome, u.lingua_id, l.nome as lingua_nome 
     FROM users u 
     LEFT JOIN nazionalita n ON u.nazionalita_id = n.id 
+    LEFT JOIN lingue l ON u.lingua_id = l.id
     WHERE u.id = ?
 ');
 $stmt->execute([$user['id']]);
@@ -30,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cognome        = trim($_POST['cognome']        ?? '');
     $email          = trim($_POST['email']          ?? '');
     $nazionalita_id = (int)($_POST['nazionalita_id'] ?? 0);
-    $lingua         = trim($_POST['lingua']         ?? '');
+    $lingua_id      = (int)($_POST['lingua_id']      ?? 0);
 
     // Validazione nazionalità
     $nazExists = false;
@@ -48,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($cognome))                            $errors[] = 'Il cognome è obbligatorio.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Inserisci un indirizzo email valido.';
     if (empty($nazionalita_id))                     $errors[] = 'La nazionalità è obbligatoria.';
-    if (empty($lingua))                             $errors[] = 'La lingua principale è obbligatoria.';
+    if (empty($lingua_id))                          $errors[] = 'La lingua principale è obbligatoria.';
 
     if (empty($errors)) {
         $chk = $pdo->prepare('SELECT id FROM users WHERE email = ? AND id <> ?');
@@ -56,14 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) {
             $errors[] = 'Questo indirizzo email è già in uso da un altro account.';
         } else {
-            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita_id=?, lingua=? WHERE id=?');
-            $upd->execute([$nome, $cognome, $email, $nazionalita_id, $lingua, $user['id']]);
+            $upd = $pdo->prepare('UPDATE users SET nome=?, cognome=?, email=?, nazionalita_id=?, lingua_id=? WHERE id=?');
+            $upd->execute([$nome, $cognome, $email, $nazionalita_id, $lingua_id, $user['id']]);
             
             // Aggiorniamo la sessione
             $_SESSION['user_nome']    = $nome;
             $_SESSION['user_cognome'] = $cognome;
             $_SESSION['user_naz']     = $selectedNazNome; // Salviamo il nome per la visualizzazione rapida
-            $_SESSION['user_lingua']  = $lingua;
+            $_SESSION['user_lingua_id'] = $lingua_id;
             
             header('Location: profilo.php?success_msg=' . urlencode('Profilo aggiornato con successo!'));
             exit;
@@ -78,7 +80,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Il mio profilo — VacanzaMatch</title>
+  <title>Il mio profilo — FrienTrip</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../../shared/base.css">
@@ -144,7 +146,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
         <div>
           <div class="input-wrap">
             <label>Lingua principale *</label>
-            <input type="text" name="lingua" required value="<?= htmlspecialchars($dbUser['lingua'] ?? '') ?>" placeholder="es. Italiano">
+            <?= lingueSelectHtml($pdo, 'lingua_id', (int)($dbUser['lingua_id'] ?? 0)) ?>
           </div>
         </div>
         <div class="full">

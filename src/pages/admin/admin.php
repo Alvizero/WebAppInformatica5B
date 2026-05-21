@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/../../shared/auth.php';
 require_once __DIR__ . '/../../shared/db_config.php';
+require_once __DIR__ . '/../../shared/lingue_list.php';
 requireAdmin();
 
 $me  = currentUser();
@@ -18,7 +19,7 @@ $numViaggi  = $pdo->query("SELECT COUNT(*) FROM viaggi")->fetchColumn();
 $numTickets = $pdo->query("SELECT COUNT(*) FROM support_tickets")->fetchColumn();
 $numAperti  = $pdo->query("SELECT COUNT(*) FROM support_tickets WHERE stato='aperto'")->fetchColumn();
 
-$utenti  = $pdo->query("SELECT u.id, u.nome, u.cognome, u.email, u.livello_utente, u.nazionalita_id, n.nome as nazionalita_nome, u.lingua, u.created_at FROM users u LEFT JOIN nazionalita n ON u.nazionalita_id = n.id ORDER BY u.livello_utente ASC, u.created_at DESC")->fetchAll();
+$utenti  = $pdo->query("SELECT u.id, u.nome, u.cognome, u.email, u.livello_utente, u.nazionalita_id, n.nome as nazionalita_nome, u.lingua_id, l.nome as lingua_nome, u.created_at FROM users u LEFT JOIN nazionalita n ON u.nazionalita_id = n.id LEFT JOIN lingue l ON u.lingua_id = l.id ORDER BY u.livello_utente ASC, u.created_at DESC")->fetchAll();
 $allNazionalita = $pdo->query("SELECT id, nome FROM nazionalita ORDER BY nome ASC")->fetchAll();
 $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u ON u.id = v.user_id ORDER BY v.created_at DESC")->fetchAll();
   $tickets = $pdo->query("SELECT t.*, u.nome, u.cognome FROM support_tickets t JOIN users u ON u.id = t.user_id ORDER BY t.created_at DESC")->fetchAll();
@@ -29,7 +30,7 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pannello Admin — VacanzaMatch</title>
+  <title>Pannello Admin — FrienTrip</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="./../../shared/base.css">
@@ -159,7 +160,7 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
                   <td>
                     <div class="row-actions">
                       <button type="button" class="btn-edit" title="Modifica dati"
-                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>','<?= (int)($u['nazionalita_id'] ?? 0) ?>','<?= htmlspecialchars(addslashes($u['lingua'] ?? '')) ?>')">
+                        onclick="openEditModal(<?= $u['id'] ?>,'<?= htmlspecialchars(addslashes($u['nome'])) ?>','<?= htmlspecialchars(addslashes($u['cognome'])) ?>','<?= htmlspecialchars(addslashes($u['email'])) ?>','<?= (int)($u['nazionalita_id'] ?? 0) ?>',<?= (int)($u['lingua_id'] ?? 1) ?>)">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Modifica
                       </button>
@@ -406,7 +407,12 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
 	        </div>
         <div class="modal-group">
           <label>Lingua</label>
-          <input type="text" name="lingua" id="edit-lingua" placeholder="es. Italiano">
+          <select name="lingua_id" id="edit-lingua" class="form-select">
+            <option value="">Seleziona lingua…</option>
+            <?php foreach (getAllLingue($pdo) as $l): ?>
+              <option value="<?= (int)$l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
+            <?php endforeach; ?>
+          </select>
         </div>
       </div>
       <div class="modal-actions">
@@ -459,13 +465,13 @@ $viaggi  = $pdo->query("SELECT v.*, u.nome, u.cognome FROM viaggi v JOIN users u
     btn.classList.add('active');
   }
 
-function openEditModal(id, nome, cognome, email, nazionalita_id, lingua) {
+function openEditModal(id, nome, cognome, email, nazionalita_id, lingua_id) {
     document.getElementById('edit-user-id').value     = id;
     document.getElementById('edit-nome').value        = nome;
     document.getElementById('edit-cognome').value     = cognome;
     document.getElementById('edit-email').value       = email;
     document.getElementById('edit-nazionalita').value = nazionalita_id;
-    document.getElementById('edit-lingua').value      = lingua;
+    document.getElementById('edit-lingua').value      = lingua_id;
     document.getElementById('edit-modal').classList.add('open');
   }
   function closeEditModal() {

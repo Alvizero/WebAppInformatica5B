@@ -47,7 +47,7 @@ $initials = strtoupper(mb_substr($dbUser['nome'],0,1) . mb_substr($dbUser['cogno
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sicurezza account — VacanzaMatch</title>
+  <title>Sicurezza account — FrienTrip</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="../../shared/base.css">
