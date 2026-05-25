@@ -133,3 +133,10 @@ Il backend espone diversi endpoint API (situati nella directory `src/api/`) per 
     *   `admin_user_edit.php`: Modifica i dati di un utente dal pannello admin.
     *   `admin_user_role.php`: Modifica il livello di ruolo di un utente dal pannello admin.
     *   `admin_viaggio_delete.php`: Elimina un viaggio dal pannello admin.
+
+
+LINK ONLINE: https://frietripe.kesug.com/pages/index/index.php
+
+PROBLEMI: alcuni funzione come la chat tra utenti / di supporto non funziona, dato che infinityFree blocca le richieste AJAX e le chiamate ripetute. Inoltre alcune funzioni del database non sono disponibili con questo tipo di host.
+
+la web app localmente funziona senza problemi.
