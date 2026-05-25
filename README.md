@@ -1,5 +1,9 @@
 # Documentazione: FrienTrip
 
+GITHUB: https://github.com/Alvizero/WebAppInformatica5B
+
+WEB APP ONLINE: guardare alla fine di questo file
+
 Per eseguire la web app, inserire tutta la cartella src dentro la cartella del server (es. xampp)
 
 Caricare il database 'frientrip.sql' dentro al server sql, e configurare i vari parametri del database dentro il file shared/db_config.php
