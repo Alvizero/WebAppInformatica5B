@@ -140,3 +140,5 @@ LINK ONLINE: https://frietripe.kesug.com/pages/index/index.php
 PROBLEMI: alcuni funzione come la chat tra utenti / di supporto non funziona, dato che infinityFree blocca le richieste AJAX e le chiamate ripetute. Inoltre alcune funzioni del database non sono disponibili con questo tipo di host.
 
 la web app localmente funziona senza problemi.
+
+LINK GITHUB: https://github.com/Alvizero/WebAppInformatica5B
